@@ -1,0 +1,68 @@
+[
+  {
+    "header": "YouTube",
+    "title": "Watched Why 99% of Developers Never Reach Senior Level",
+    "titleUrl": "https://www.youtube.com/watch?v=kYJyrhV3yvY",
+    "subtitles": [
+      {
+        "name": "Zen van Riel",
+        "url": "https://www.youtube.com/channel/UC-zenvanriel"
+      }
+    ],
+    "time": "2026-10-28T18:45:10.000Z",
+    "products": ["YouTube"]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched System Design Interview: Design Discord from Scratch",
+    "titleUrl": "https://www.youtube.com/watch?v=vz_2i9yY_xI",
+    "subtitles": [
+      {
+        "name": "ByteByteGo",
+        "url": "https://www.youtube.com/channel/UC-bytebytego"
+      }
+    ],
+    "time": "2026-10-27T14:20:00.000Z",
+    "products": ["YouTube"]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched 100+ Computer Science Concepts Explained in 13 Minutes",
+    "titleUrl": "https://www.youtube.com/watch?v=-uleG_Vecis",
+    "subtitles": [
+      {
+        "name": "Fireship",
+        "url": "https://www.youtube.com/channel/UC-fireship"
+      }
+    ],
+    "time": "2026-10-26T11:15:22.000Z",
+    "products": ["YouTube"]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched CSS Grid is finally understandable in 60 seconds",
+    "titleUrl": "https://www.youtube.com/shorts/qL4c8mK9x9U",
+    "subtitles": [
+      {
+        "name": "Kevin Powell",
+        "url": "https://www.youtube.com/channel/UC-kevinpowell"
+      }
+    ],
+    "time": "2026-10-25T09:30:00.000Z",
+    "products": ["YouTube"]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched The Era of Chatbots is Over. The Era of AI Agents Begins",
+    "titleUrl": "https://www.youtube.com/shorts/da220865XYZ",
+    "subtitles": [
+      {
+        "name": "Vaibhav Sisinty",
+        "url": "https://www.youtube.com/channel/UC-vaibhav"
+      }
+    ],
+    "time": "2026-10-24T16:10:00.000Z",
+    "products": ["YouTube"]
+  }
+]
+
