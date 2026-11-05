@@ -208,7 +208,7 @@ watch(isOpen, (newVal) => {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(15, 23, 42, 0.65);
+    background: rgba(28, 33, 30, 0.62);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     z-index: 1060;
@@ -218,8 +218,8 @@ watch(isOpen, (newVal) => {
 .tour-card {
     width: 100%;
     max-width: 580px;
-    background: #ffffff;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    background: var(--surface-card);
+    box-shadow: 0 24px 48px -20px rgba(28, 33, 30, 0.35);
     animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -229,25 +229,25 @@ watch(isOpen, (newVal) => {
 }
 
 .tour-tips-box {
-    background: #f8fafc;
-    border-color: #e2e8f0;
+    background: var(--surface-sunken);
+    border-color: var(--border-default);
 }
 
 .tour-dot {
     width: 9px;
     height: 9px;
     border-radius: 9999px;
-    background-color: #cbd5e1;
+    background-color: var(--border-hover);
     transition: all 0.2s ease;
 }
 
 .tour-dot:hover {
-    background-color: #94a3b8;
+    background-color: var(--text-secondary);
 }
 
 .tour-dot.active {
     width: 24px;
-    background-color: var(--bs-primary, #0d6efd);
+    background-color: var(--brand-primary);
 }
 
 .smaller {

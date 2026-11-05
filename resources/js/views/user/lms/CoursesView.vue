@@ -3,10 +3,12 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLms } from '@/composables/useLms';
 import { useNotification } from '@/composables/useNotification';
+import { useConfirm } from '@/composables/useConfirm';
 
 const router = useRouter();
 const { courses, isLoading, isSaving, fetchCourses, createCourse, deleteCourse } = useLms();
 const { success, error } = useNotification();
+const { confirm } = useConfirm();
 
 const showModal = ref(false);
 const title = ref('');
@@ -37,7 +39,15 @@ const handleCreateCourse = async () => {
 };
 
 const handleDelete = async (course) => {
-    if (!confirm(`আপনি কি "${course.title}" কোর্সটি এবং এর অন্তর্গত সকল চ্যাপ্টার মুছে ফেলতে চান?`)) return;
+    const isConfirmed = await confirm({
+        title: 'কোর্স মুছে ফেলুন',
+        message: `"${course.title}" কোর্সটি এবং এর অন্তর্গত সকল চ্যাপ্টার ও লেসন স্থায়ীভাবে মুছে যাবে। এটি ফিরিয়ে আনা যাবে না।`,
+        confirmLabel: 'হ্যাঁ, কোর্স মুছুন',
+        cancelLabel: 'বাতিল',
+    });
+
+    if (!isConfirmed) return;
+
     try {
         await deleteCourse(course.id);
         success('কোর্স সফলভাবে মুছে ফেলা হয়েছে।');
@@ -94,7 +104,7 @@ onMounted(() => {
             <!-- Course Cards Grid -->
             <div v-else class="row g-4">
                 <div v-for="course in courses" :key="course.id" class="col-md-6 col-lg-4">
-                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden d-flex flex-column hover-shadow transition bg-white">
+                    <div class="card card-hover h-100 overflow-hidden d-flex flex-column">
                         <div class="card-body p-4 d-flex flex-column">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <span class="badge" :class="course.visibility === 'public' ? 'bg-success-subtle text-success' : 'bg-light text-secondary border'">
@@ -244,13 +254,6 @@ onMounted(() => {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-}
-.hover-shadow:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
-    transform: translateY(-2px);
-}
-.transition {
-    transition: all 0.2s ease-in-out;
 }
 </style>
 

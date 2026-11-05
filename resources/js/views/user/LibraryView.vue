@@ -128,7 +128,7 @@ onMounted(() => {
             </div>
 
             <!-- Filters & Search Toolbar -->
-            <div class="card border-0 shadow-sm p-3 mb-4 bg-white rounded-3">
+            <div class="card filter-bar p-3 mb-4">
                 <div class="row g-2 align-items-center">
                     <!-- Search Input -->
                     <div class="col-md-5">
@@ -168,7 +168,7 @@ onMounted(() => {
                         <button
                             type="button"
                             class="btn btn-sm"
-                            :class="onlyBookmarked ? 'btn-warning text-dark' : 'btn-outline-secondary'"
+                            :class="onlyBookmarked ? 'btn-accent' : 'btn-outline-secondary'"
                             @click="onlyBookmarked = !onlyBookmarked"
                         >
                             <i class="bi" :class="onlyBookmarked ? 'bi-bookmark-star-fill' : 'bi-bookmark'"></i>
@@ -207,7 +207,7 @@ onMounted(() => {
                 <p class="small text-muted mt-2">লাইব্রেরি লোড হচ্ছে...</p>
             </div>
 
-            <div v-else-if="filteredArticles.length === 0" class="card border-0 shadow-sm p-5 text-center bg-white rounded-4">
+            <div v-else-if="filteredArticles.length === 0" class="card p-5 text-center">
                 <i class="bi bi-collection text-muted fs-1 mb-2"></i>
                 <h6 class="fw-bold text-dark">কোনো আর্টিকেল পাওয়া যায়নি</h6>
                 <p class="text-secondary small mb-3">আপনার সার্চ ফিল্টার পরিবর্তন করুন অথবা নতুন ভিডিও যুক্ত করুন।</p>
@@ -221,7 +221,7 @@ onMounted(() => {
             <!-- Card Grid -->
             <div v-else class="row g-3">
                 <div v-for="item in filteredArticles" :key="item.id" class="col-md-6 col-lg-4">
-                    <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden d-flex flex-column hover-shadow transition">
+                    <div class="card card-hover h-100 overflow-hidden d-flex flex-column">
                         <!-- Thumbnail Area -->
                         <div class="position-relative bg-light cursor-pointer" @click="openArticle(item.id)">
                             <img
@@ -323,12 +323,8 @@ onMounted(() => {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
-.hover-shadow:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12) !important;
-    transform: translateY(-2px);
-}
-.transition {
-    transition: all 0.2s ease-in-out;
+.filter-bar {
+    border-radius: var(--radius-card);
 }
 </style>
 

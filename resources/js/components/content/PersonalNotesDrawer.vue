@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import api from '@/services/api';
 import { useNotification } from '@/composables/useNotification';
+import { useConfirm } from '@/composables/useConfirm';
 
 const props = defineProps({
     contentId: {
@@ -17,6 +18,7 @@ const props = defineProps({
 const emit = defineEmits(['updated']);
 
 const { success, error } = useNotification();
+const { confirm } = useConfirm();
 const noteContent = ref(props.initialNote || '');
 const isSaving = ref(false);
 const isEditing = ref(!props.initialNote);
@@ -39,7 +41,15 @@ const handleSave = async () => {
 };
 
 const handleDelete = async () => {
-    if (!confirm('আপনি কি এই নোটটি মুছে ফেলতে চান?')) return;
+    const isConfirmed = await confirm({
+        title: 'নোট মুছে ফেলুন',
+        message: 'এই ব্যক্তিগত নোটটি স্থায়ীভাবে মুছে যাবে।',
+        confirmLabel: 'হ্যাঁ, নোট মুছুন',
+        cancelLabel: 'বাতিল',
+    });
+
+    if (!isConfirmed) return;
+
     isSaving.value = true;
     try {
         await api.delete(`/user/articles/${props.contentId}/notes`);

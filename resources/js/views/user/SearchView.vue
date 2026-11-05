@@ -176,7 +176,7 @@ const openVideoModal = (item) => {
                             <button
                                 type="button"
                                 class="btn btn-sm rounded-pill px-3"
-                                :class="contentType === 'all' ? 'btn-dark text-white fw-semibold' : 'btn-white bg-white border text-secondary'"
+                                :class="contentType === 'all' ? 'btn-primary fw-semibold' : 'bg-white border text-secondary'"
                                 @click="contentType = 'all'"
                             >
                                 সব
@@ -184,7 +184,7 @@ const openVideoModal = (item) => {
                             <button
                                 type="button"
                                 class="btn btn-sm rounded-pill px-3"
-                                :class="contentType === 'video' ? 'btn-dark text-white fw-semibold' : 'btn-white bg-white border text-secondary'"
+                                :class="contentType === 'video' ? 'btn-primary fw-semibold' : 'bg-white border text-secondary'"
                                 @click="contentType = 'video'"
                             >
                                 <i class="bi bi-play-circle me-1"></i> ভিডিও
@@ -192,7 +192,7 @@ const openVideoModal = (item) => {
                             <button
                                 type="button"
                                 class="btn btn-sm rounded-pill px-3"
-                                :class="contentType === 'short' ? 'btn-dark text-white fw-semibold' : 'btn-white bg-white border text-secondary'"
+                                :class="contentType === 'short' ? 'btn-primary fw-semibold' : 'bg-white border text-secondary'"
                                 @click="contentType = 'short'"
                             >
                                 <i class="bi bi-lightning text-danger me-1"></i> শর্টস
@@ -418,15 +418,15 @@ const openVideoModal = (item) => {
 <style scoped>
 .result-card {
     cursor: pointer;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-default);
 }
 .result-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
-    border-color: rgba(13, 110, 253, 0.3);
+    box-shadow: var(--card-shadow-hover) !important;
+    border-color: var(--border-hover);
 }
 .result-card:hover .title-hover {
-    color: #0d6efd !important;
+    color: var(--brand-primary) !important;
 }
 .leading-snug {
     line-height: 1.35;
@@ -438,8 +438,8 @@ const openVideoModal = (item) => {
     transition: all 0.2s ease-in-out;
 }
 :deep(mark) {
-    background-color: #fff3cd !important;
-    color: #212529 !important;
+    background-color: #fff8eb !important;
+    color: #b45309 !important;
     padding: 0 3px;
     border-radius: 3px;
     font-weight: 600;

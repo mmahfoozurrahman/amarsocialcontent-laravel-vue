@@ -133,16 +133,16 @@ const copyDemoOtp = async () => {
 </script>
 
 <template>
-    <div class="auth-page py-5">
+    <div class="auth-page">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-7 col-lg-5">
-                    <div class="card border-0 shadow-sm rounded-4 p-4 p-sm-5 bg-white">
+                    <div class="card auth-card p-4 p-sm-5">
                         <div class="text-center mb-4">
-                            <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle mb-3" style="width: 56px; height: 56px;">
+                            <span class="auth-icon">
                                 <i :class="step === 1 ? 'bi-envelope-check fs-3' : 'bi-shield-lock fs-3'"></i>
-                            </div>
-                            <h3 class="fw-bold text-dark">
+                            </span>
+                            <h3 class="auth-title fw-bold">
                                 {{ step === 1 ? 'পাসওয়ার্ডলেস লগইন / সাইনআপ' : 'ওটিপি ভেরিফিকেশন' }}
                             </h3>
                             <p class="text-secondary small mb-0">
@@ -155,7 +155,7 @@ const copyDemoOtp = async () => {
                         <!-- Step 1: Email Form -->
                         <form v-if="step === 1" @submit.prevent="handleSendOtp" novalidate>
                             <!-- Demo Mode Banner -->
-                            <div v-if="isDemoMode" class="alert alert-primary bg-primary-subtle border-0 rounded-3 p-3 mb-3 text-start">
+                            <div v-if="isDemoMode" class="alert alert-primary auth-note border-0 p-3 mb-3 text-start">
                                 <div class="d-flex align-items-center gap-2 mb-1">
                                     <span class="badge bg-primary text-white"><i class="bi bi-stars"></i> ডেমো মোড</span>
                                     <span class="small fw-bold text-primary">স্ক্রিন থেকেই ওটিপি পাওয়া যাবে</span>
@@ -167,14 +167,14 @@ const copyDemoOtp = async () => {
                                     <span class="smaller text-muted me-1">ক্লিক করে পূরণ করুন:</span>
                                     <button 
                                         type="button" 
-                                        class="btn btn-sm btn-white bg-white border py-0 px-2 smaller fw-semibold text-primary"
+                                        class="btn btn-sm bg-white border py-0 px-2 smaller fw-semibold text-primary"
                                         @click="email = 'mail@laravelcs.com'; name = 'Lara Code Vault'"
                                     >
                                         mail@laravelcs.com
                                     </button>
                                     <button 
                                         type="button" 
-                                        class="btn btn-sm btn-white bg-white border py-0 px-2 smaller fw-semibold text-secondary"
+                                        class="btn btn-sm bg-white border py-0 px-2 smaller fw-semibold text-secondary"
                                         @click="email = 'admin@example.com'; name = 'Admin User'"
                                     >
                                         admin@example.com
@@ -230,7 +230,7 @@ const copyDemoOtp = async () => {
 
                             <button
                                 type="submit"
-                                class="btn btn-primary w-100 py-2 fw-semibold"
+                                class="btn btn-primary btn-lg w-100"
                                 :disabled="isAuthenticating"
                             >
                                 <span v-if="isAuthenticating" class="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -242,14 +242,14 @@ const copyDemoOtp = async () => {
                         <!-- Step 2: OTP Form -->
                         <form v-else @submit.prevent="handleVerifyOtp" novalidate>
                             <!-- Demo OTP Display Box -->
-                            <div v-if="demoOtp" class="demo-otp-card p-3 rounded-3 mb-4 bg-primary-subtle border border-primary-subtle text-center">
+                            <div v-if="demoOtp" class="demo-otp-card auth-note p-3 mb-4 text-center">
                                 <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
                                     <span class="badge bg-primary text-white"><i class="bi bi-stars"></i> ডেমো মোড</span>
                                     <span class="small fw-bold text-primary">স্ক্রিনে ওটিপি কোড:</span>
                                 </div>
 
                                 <div class="d-flex align-items-center justify-content-center gap-2 my-2">
-                                    <span class="fs-1 fw-bold font-monospace text-primary tracking-wide bg-white px-3 py-1 rounded-3 border shadow-sm">
+                                    <span class="fs-1 fw-bold font-monospace text-primary tracking-wide otp-code-box px-3 py-1">
                                         {{ demoOtp }}
                                     </span>
                                     <button 
@@ -279,7 +279,7 @@ const copyDemoOtp = async () => {
                             </div>
 
                             <!-- Live Production Helper Alert (When NOT in demo mode) -->
-                            <div v-else class="alert alert-info py-2 px-3 small border-0 rounded-3 mb-3 text-start">
+                            <div v-else class="alert alert-info auth-note py-2 px-3 small border-0 mb-3 text-start text-secondary">
                                 <i class="bi bi-envelope-open me-1"></i> আপনার <strong>{{ email }}</strong> ঠিকানায় ওটিপি পাঠানো হয়েছে। ইনবক্স ও স্প্যাম ফোল্ডার চেক করে নিচে কোডটি লিখুন।
                             </div>
 
@@ -316,7 +316,7 @@ const copyDemoOtp = async () => {
 
                             <button
                                 type="submit"
-                                class="btn btn-primary w-100 py-2 fw-semibold mb-3"
+                                class="btn btn-primary btn-lg w-100 mb-3"
                                 :disabled="isAuthenticating || otp.length !== 6"
                             >
                                 <span v-if="isAuthenticating" class="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -328,7 +328,7 @@ const copyDemoOtp = async () => {
                                 <p class="small text-muted mb-2">কোড পাননি?</p>
                                 <button
                                     type="button"
-                                    class="btn btn-outline-secondary btn-sm px-3"
+                                    class="btn btn-soft btn-sm px-3"
                                     :disabled="countdown > 0 || isAuthenticating"
                                     @click="handleResend"
                                 >
@@ -345,6 +345,46 @@ const copyDemoOtp = async () => {
 </template>
 
 <style scoped>
+.auth-page {
+    padding: 3.5rem 0 4rem;
+    background: radial-gradient(1100px 380px at 50% -140px, rgba(var(--brand-primary-rgb), 0.1), transparent 72%);
+}
+
+.auth-card {
+    border-radius: var(--radius-card);
+    box-shadow: var(--card-shadow);
+}
+
+.auth-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+    border-radius: 50%;
+    background: var(--brand-soft);
+    color: var(--brand-primary);
+    box-shadow: inset 0 0 0 1px rgba(var(--brand-primary-rgb), 0.12);
+}
+
+.auth-title {
+    font-size: clamp(1.35rem, 2.4vw, 1.65rem);
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+}
+
+.auth-note {
+    background: var(--brand-soft);
+    border-radius: var(--radius-control);
+}
+
+.otp-code-box {
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-control);
+    background: var(--surface-card);
+}
+
 .letter-spacing-lg {
     letter-spacing: 0.35rem;
 }

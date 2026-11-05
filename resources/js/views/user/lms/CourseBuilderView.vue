@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useLms } from '@/composables/useLms';
 import { useNotification } from '@/composables/useNotification';
+import { useConfirm } from '@/composables/useConfirm';
 
 const route = useRoute();
 const router = useRouter();
@@ -22,6 +23,7 @@ const {
 } = useLms();
 
 const { success, error } = useNotification();
+const { confirm } = useConfirm();
 
 // Modal States
 const showChapterModal = ref(false);
@@ -89,7 +91,15 @@ const handleAddLesson = async () => {
 
 // Delete Chapter
 const handleDeleteChapter = async (chapter) => {
-    if (!confirm(`আপনি কি "${chapter.title}" চ্যাপ্টারটি মুছে ফেলতে চান? এর ভেতরের সকল লেসন মুছে যাবে।`)) return;
+    const isConfirmed = await confirm({
+        title: 'চ্যাপ্টার মুছে ফেলুন',
+        message: `"${chapter.title}" চ্যাপ্টারটি এবং এর ভেতরের সকল লেসন স্থায়ীভাবে মুছে যাবে।`,
+        confirmLabel: 'হ্যাঁ, চ্যাপ্টার মুছুন',
+        cancelLabel: 'বাতিল',
+    });
+
+    if (!isConfirmed) return;
+
     try {
         await deleteChapter(courseId.value, chapter.id);
         success('চ্যাপ্টার মুছে ফেলা হয়েছে।');
@@ -101,7 +111,15 @@ const handleDeleteChapter = async (chapter) => {
 
 // Delete Lesson
 const handleDeleteLesson = async (lesson) => {
-    if (!confirm(`আপনি কি "${lesson.title}" লেসনটি মুছে ফেলতে চান?`)) return;
+    const isConfirmed = await confirm({
+        title: 'লেসন মুছে ফেলুন',
+        message: `"${lesson.title}" লেসনটি কোর্স থেকে স্থায়ীভাবে মুছে যাবে। মূল আর্টিকেলটি আপনার লাইব্রেরিতে অক্ষত থাকবে।`,
+        confirmLabel: 'হ্যাঁ, লেসন মুছুন',
+        cancelLabel: 'বাতিল',
+    });
+
+    if (!isConfirmed) return;
+
     try {
         await deleteLesson(courseId.value, lesson.id);
         success('লেসন মুছে ফেলা হয়েছে।');
@@ -371,7 +389,7 @@ onMounted(async () => {
     font-size: 0.8rem;
 }
 .hover-bg:hover {
-    background-color: #f8fafc;
+    background-color: var(--surface-sunken);
 }
 .transition {
     transition: background-color 0.15s ease-in-out;

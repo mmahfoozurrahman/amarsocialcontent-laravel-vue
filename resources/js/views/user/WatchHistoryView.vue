@@ -2,9 +2,11 @@
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useWatchHistory } from '@/composables/useWatchHistory';
+import { useConfirm } from '@/composables/useConfirm';
 import VideoDetailsModal from '@/components/video/VideoDetailsModal.vue';
 
 const router = useRouter();
+const { confirm } = useConfirm();
 
 const {
     items,
@@ -128,15 +130,15 @@ const handleBatchImport = async () => {
     if (selectedIds.value.length === 0) return;
 
     const count = selectedIds.value.length;
-    const confirmed = confirm(`আপনি কি নির্বাচিত ${count} টি ভিডিও এআই দিয়ে বাংলায় রূপান্তর করতে চান?`);
-    if (!confirmed) return;
+    const isConfirmed = await confirm(`আপনি কি নির্বাচিত ${count} টি ভিডিও এআই দিয়ে বাংলায় রূপান্তর করতে চান?`, { title: 'ব্যাচ এআই রূপান্তর শুরু করবেন?', variant: 'primary', icon: 'bi-stars' });
+    if (!isConfirmed) return;
 
     try {
         await batchImport(selectedIds.value);
         selectedIds.value = [];
         await loadData(currentPage.value);
         // Prompt user to view dashboard
-        if (confirm('ভিডিওগুলো ব্যাকগ্রাউন্ডে প্রসেস শুরু হয়েছে! আপনি কি এখনই ড্যাশবোর্ডে গিয়ে প্রোগ্রেস দেখতে চান?')) {
+        if (await confirm('ভিডিওগুলো ব্যাকগ্রাউন্ডে প্রসেস শুরু হয়েছে! আপনি কি এখনই ড্যাশবোর্ডে গিয়ে প্রোগ্রেস দেখতে চান?', { title: 'প্রসেসিং শুরু হয়েছে! 🚀', variant: 'primary', icon: 'bi-speedometer2' })) {
             router.push('/dashboard');
         }
     } catch (e) {}
@@ -663,13 +665,13 @@ onMounted(async () => {
 }
 
 .text-hover-primary:hover {
-    color: #0d6efd !important;
+    color: var(--brand-primary) !important;
     text-decoration: underline;
 }
 
 .hover-bg-light:hover {
-    background-color: #f8f9fa !important;
-    border-color: #0d6efd !important;
+    background-color: var(--surface-sunken) !important;
+    border-color: var(--brand-primary) !important;
 }
 
 .sticky-import-bar {

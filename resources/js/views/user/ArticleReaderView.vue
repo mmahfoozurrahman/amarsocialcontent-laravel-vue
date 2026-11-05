@@ -185,7 +185,7 @@ onUnmounted(() => {
                             <!-- Bookmark Button -->
                             <button
                                 class="btn btn-sm"
-                                :class="article.is_bookmarked ? 'btn-warning text-dark' : 'btn-outline-secondary'"
+                                :class="article.is_bookmarked ? 'btn-accent' : 'btn-outline-secondary'"
                                 title="বুকমার্ক"
                                 @click="handleBookmarkToggle"
                             >
@@ -353,32 +353,34 @@ onUnmounted(() => {
 <style>
 /* Markdown Typography Styles */
 .markdown-body {
-    line-height: 1.8;
-    color: #334155;
-    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--text-reading);
+    font-size: 1.06rem;
 }
 .markdown-body h1 {
     font-size: 1.75rem;
     font-weight: 700;
-    color: #1e293b;
-    margin-top: 1.5rem;
+    color: var(--text-primary);
+    margin-top: 1.75rem;
     margin-bottom: 1rem;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid var(--border-default);
     padding-bottom: 0.5rem;
+    letter-spacing: -0.02em;
 }
 .markdown-body h2 {
     font-size: 1.4rem;
     font-weight: 600;
-    color: #1e293b;
+    color: var(--text-primary);
     margin-top: 1.75rem;
     margin-bottom: 0.75rem;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--surface-sunken);
     padding-bottom: 0.35rem;
+    letter-spacing: -0.02em;
 }
 .markdown-body h3 {
     font-size: 1.15rem;
     font-weight: 600;
-    color: #334155;
+    color: var(--text-reading);
     margin-top: 1.25rem;
     margin-bottom: 0.5rem;
 }
@@ -393,23 +395,23 @@ onUnmounted(() => {
     margin-bottom: 0.4rem;
 }
 .markdown-body code {
-    background-color: #f1f5f9;
-    color: #2563eb;
+    background-color: var(--surface-sunken);
+    color: var(--brand-primary-hover);
     padding: 0.2rem 0.4rem;
-    border-radius: 0.25rem;
+    border-radius: 0.35rem;
     font-size: 0.9em;
 }
 .markdown-body pre {
-    background-color: #0f172a;
-    color: #f8fafc;
+    background-color: var(--text-primary);
+    color: var(--surface-page);
     padding: 1rem;
-    border-radius: 0.5rem;
+    border-radius: var(--radius-control);
     overflow-x: auto;
 }
 .markdown-body blockquote {
-    border-left: 4px solid #2563eb;
+    border-left: 4px solid var(--brand-primary);
     padding-left: 1rem;
-    color: #64748b;
+    color: var(--text-secondary);
     margin-left: 0;
     font-style: italic;
 }

@@ -4,6 +4,7 @@ import { useAuth } from '@/composables/useAuth';
 import { useContent } from '@/composables/useContent';
 import { useNotification } from '@/composables/useNotification';
 import { useTour } from '@/composables/useTour';
+import { useConfirm } from '@/composables/useConfirm';
 import AddContentModal from '@/components/content/AddContentModal.vue';
 import ManualTranscriptModal from '@/components/content/ManualTranscriptModal.vue';
 import StatusBadge from '@/components/content/StatusBadge.vue';
@@ -13,6 +14,7 @@ const { user } = useAuth();
 const { articles, isLoading, fetchArticles, retryContent, deleteContent } = useContent();
 const { success, error } = useNotification();
 const { openTour, shouldAutoShow } = useTour();
+const { confirm } = useConfirm();
 
 const addModalRef = ref(null);
 const manualTranscriptModalRef = ref(null);
@@ -41,7 +43,15 @@ const handleRetry = async (article) => {
 };
 
 const handleDelete = async (article) => {
-    if (!confirm('আপনি কি নিশ্চিত যে এই কনটেন্টটি মুছে ফেলতে চান?')) return;
+    const isConfirmed = await confirm({
+        title: 'কনটেন্ট মুছে ফেলুন',
+        message: `"${article.bengali_title || article.title}" কনটেন্টটি আপনার লাইব্রেরি থেকে স্থায়ীভাবে মুছে যাবে। এটি ফিরিয়ে আনা যাবে না।`,
+        confirmLabel: 'হ্যাঁ, মুছে ফেলুন',
+        cancelLabel: 'বাতিল',
+    });
+
+    if (!isConfirmed) return;
+
     try {
         await deleteContent(article.id);
         success('কনটেন্ট সফলভাবে মুছে ফেলা হয়েছে।');
@@ -126,61 +136,28 @@ const totalMinutes = computed(() => {
                 </div>
             </div>
 
-            <!-- Stats Row -->
-            <div class="row g-3 mb-4">
-                <div class="col-sm-6 col-lg-3">
-                    <div class="card h-100 border-0 shadow-sm p-3">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                                <span class="text-muted small fw-semibold">সংরক্ষিত আর্টিকেল</span>
-                                <h3 class="fw-bold text-dark mt-1 mb-0">{{ articles.length }}</h3>
-                            </div>
-                            <div class="p-3 bg-primary-subtle text-primary rounded-3">
-                                <i class="bi bi-journal-richtext fs-4"></i>
-                            </div>
-                        </div>
+            <!-- Stats Band -->
+            <div class="brand-stat-band p-4 mb-4">
+                <div class="row g-4">
+                    <div class="col-6 col-lg-3 stat-item">
+                        <div class="stat-value">{{ articles.length }}</div>
+                        <div class="stat-label">সংরক্ষিত আর্টিকেল</div>
+                        <div class="stat-hint">মোট লাইব্রেরি কনটেন্ট</div>
                     </div>
-                </div>
-
-                <div class="col-sm-6 col-lg-3">
-                    <div class="card h-100 border-0 shadow-sm p-3">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                                <span class="text-muted small fw-semibold">প্রস্তুত সম্পন্ন</span>
-                                <h3 class="fw-bold text-success mt-1 mb-0">{{ completedCount }}</h3>
-                            </div>
-                            <div class="p-3 bg-success-subtle text-success rounded-3">
-                                <i class="bi bi-check2-all fs-4"></i>
-                            </div>
-                        </div>
+                    <div class="col-6 col-lg-3 stat-item">
+                        <div class="stat-value">{{ completedCount }}</div>
+                        <div class="stat-label">প্রস্তুত সম্পন্ন</div>
+                        <div class="stat-hint">বাংলা আর্টিকেল তৈরি</div>
                     </div>
-                </div>
-
-                <div class="col-sm-6 col-lg-3">
-                    <div class="card h-100 border-0 shadow-sm p-3">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                                <span class="text-muted small fw-semibold">মোট পড়ার সময়</span>
-                                <h3 class="fw-bold text-dark mt-1 mb-0">{{ totalMinutes }} মিনিট</h3>
-                            </div>
-                            <div class="p-3 bg-info-subtle text-info rounded-3">
-                                <i class="bi bi-clock-history fs-4"></i>
-                            </div>
-                        </div>
+                    <div class="col-6 col-lg-3 stat-item">
+                        <div class="stat-value">{{ totalMinutes }}</div>
+                        <div class="stat-label">মোট পড়ার সময় (মিনিট)</div>
+                        <div class="stat-hint">আনুমানিক রিডিং টাইম</div>
                     </div>
-                </div>
-
-                <div class="col-sm-6 col-lg-3">
-                    <div class="card h-100 border-0 shadow-sm p-3">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                                <span class="text-muted small fw-semibold">লার্নিং স্টাডি স্ট্রিক</span>
-                                <h3 class="fw-bold text-warning mt-1 mb-0">১ দিন 🔥</h3>
-                            </div>
-                            <div class="p-3 bg-warning-subtle text-warning rounded-3">
-                                <i class="bi bi-fire fs-4"></i>
-                            </div>
-                        </div>
+                    <div class="col-6 col-lg-3 stat-item">
+                        <div class="stat-value">১ দিন 🔥</div>
+                        <div class="stat-label">লার্নিং স্টাডি স্ট্রিক</div>
+                        <div class="stat-hint">নিয়মিত পড়ার ধারাবাহিকতা</div>
                     </div>
                 </div>
             </div>
@@ -217,117 +194,74 @@ const totalMinutes = computed(() => {
                         </button>
                     </div>
 
-                    <!-- Articles Table / Cards -->
-                    <div v-else class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 80px;">ভিডিও</th>
-                                    <th>শিরোনাম ও মূল উৎস</th>
-                                    <th>বাংলা শিরোনাম</th>
-                                    <th>ফরম্যাট</th>
-                                    <th>স্ট্যাটাস</th>
-                                    <th class="text-end pe-3">অ্যাকশন</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="item in articles" :key="item.id">
-                                    <td>
-                                        <div
-                                            class="position-relative cursor-pointer d-inline-block rounded overflow-hidden"
-                                            title="ভিডিও প্লেয়ার ও বিস্তারিত দেখুন"
-                                            @click="openVideoModal(item)"
-                                        >
-                                            <img
-                                                :src="item.thumbnail_url || 'https://img.youtube.com/vi/' + item.youtube_video_id + '/default.jpg'"
-                                                alt="Thumbnail"
-                                                class="rounded object-fit-cover shadow-sm"
-                                                style="width: 72px; height: 42px;"
-                                            />
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="fw-semibold text-dark text-truncate" style="max-width: 280px;" :title="item.title">
-                                            {{ item.title }}
-                                        </div>
-                                        <div class="small text-muted d-flex align-items-center gap-1">
-                                            <i class="bi bi-person-video2"></i> {{ item.channel_name }}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div v-if="item.bengali_title" class="fw-medium text-primary text-truncate cursor-pointer" style="max-width: 260px;" :title="item.bengali_title" @click="openVideoModal(item)">
-                                            {{ item.bengali_title }}
-                                        </div>
-                                        <span v-else class="text-muted smaller fst-italic">প্রসেসিং চলছে...</span>
-                                    </td>
-                                    <td>
+                    <!-- Articles Card Grid -->
+                    <div v-else class="row g-3 g-lg-4 p-3 p-lg-4">
+                        <div v-for="item in articles" :key="item.id" class="col-md-6 col-xl-4">
+                            <div class="card content-card card-hover h-100 overflow-hidden">
+                                <div
+                                    class="content-thumb cursor-pointer"
+                                    title="ভিডিও প্লেয়ার ও বিস্তারিত দেখুন"
+                                    @click="openVideoModal(item)"
+                                >
+                                    <img
+                                        :src="item.thumbnail_url || 'https://img.youtube.com/vi/' + item.youtube_video_id + '/default.jpg'"
+                                        alt="Thumbnail"
+                                        class="content-thumb-img"
+                                    />
+                                    <span class="content-thumb-play"><i class="bi bi-play-fill"></i></span>
+                                </div>
+                                <div class="card-body d-flex flex-column p-3">
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
                                         <span v-if="item.content_type === 'short'" class="badge bg-danger-subtle text-danger">
                                             <i class="bi bi-lightning-fill"></i> Short
                                         </span>
                                         <span v-else class="badge bg-light text-secondary border">
                                             <i class="bi bi-play-circle"></i> Video
                                         </span>
-                                    </td>
-                                    <td>
                                         <StatusBadge :status="item.status" />
-                                        <div v-if="item.error_message" class="text-danger smaller mt-1 text-truncate" style="max-width: 180px;" :title="item.error_message">
-                                            {{ item.error_message }}
-                                        </div>
-                                    </td>
-                                    <td class="text-end pe-3">
-                                        <div class="btn-group btn-group-sm">
-                                            <!-- Video Modal Button -->
-                                            <button
-                                                class="btn btn-outline-danger"
-                                                title="ভিডিও প্লেয়ার ও বিস্তারিত তথ্য"
-                                                @click="openVideoModal(item)"
-                                            >
-                                                <i class="bi bi-youtube"></i>
-                                            </button>
+                                    </div>
 
-                                            <!-- Read Article Button if completed -->
-                                            <router-link
-                                                v-if="item.status === 'completed'"
-                                                :to="`/articles/${item.id}`"
-                                                class="btn btn-outline-primary"
-                                                title="বাংলা আর্টিকেল পড়ুন"
-                                            >
-                                                <i class="bi bi-book-half"></i>
-                                            </router-link>
+                                    <h3 class="h6 fw-bold text-dark mb-1 content-clamp" :title="item.title">
+                                        {{ item.title }}
+                                    </h3>
+                                    <div class="small text-muted d-flex align-items-center gap-1 mb-2">
+                                        <i class="bi bi-person-video2"></i> {{ item.channel_name }}
+                                    </div>
 
-                                            <!-- Manual Transcript Button if failed -->
-                                            <button
-                                                v-if="item.status === 'failed' && !item.has_transcript"
-                                                class="btn btn-outline-warning"
-                                                title="ম্যানুয়াল ট্রান্সক্রিপ্ট দিন"
-                                                @click="openManualTranscriptModal(item)"
-                                            >
-                                                <i class="bi bi-file-earmark-text"></i>
-                                            </button>
+                                    <div
+                                        v-if="item.bengali_title"
+                                        class="content-bengali fw-medium text-primary cursor-pointer mb-2"
+                                        :title="item.bengali_title"
+                                        @click="openVideoModal(item)"
+                                    >
+                                        {{ item.bengali_title }}
+                                    </div>
+                                    <span v-else class="text-muted smaller fst-italic mb-2">প্রসেসিং চলছে...</span>
 
-                                            <!-- Retry Button if failed -->
-                                            <button
-                                                v-if="item.status === 'failed'"
-                                                class="btn btn-outline-primary"
-                                                title="আবার চেষ্টা করুন"
-                                                @click="handleRetry(item)"
-                                            >
-                                                <i class="bi bi-arrow-repeat"></i>
-                                            </button>
+                                    <div v-if="item.error_message" class="text-danger smaller mb-2 content-clamp" :title="item.error_message">
+                                        {{ item.error_message }}
+                                    </div>
 
-                                            <!-- Delete Button -->
-                                            <button
-                                                class="btn btn-outline-danger"
-                                                title="মুছে ফেলুন"
-                                                @click="handleDelete(item)"
-                                            >
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                    <div class="mt-auto d-flex align-items-center gap-2 pt-3 content-actions">
+                                        <button class="btn btn-outline-danger btn-sm" title="ভিডিও প্লেয়ার ও বিস্তারিত তথ্য" @click="openVideoModal(item)">
+                                            <i class="bi bi-youtube"></i>
+                                        </button>
+                                        <router-link v-if="item.status === 'completed'" :to="`/articles/${item.id}`" class="btn btn-outline-primary btn-sm" title="বাংলা আর্টিকেল পড়ুন">
+                                            <i class="bi bi-book-half"></i>
+                                        </router-link>
+                                        <button v-if="item.status === 'failed' && !item.has_transcript" class="btn btn-outline-warning btn-sm" title="ম্যানুয়াল ট্রান্সক্রিপ্ট দিন" @click="openManualTranscriptModal(item)">
+                                            <i class="bi bi-file-earmark-text"></i>
+                                        </button>
+                                        <button v-if="item.status === 'failed'" class="btn btn-outline-primary btn-sm" title="আবার চেষ্টা করুন" @click="handleRetry(item)">
+                                            <i class="bi bi-arrow-repeat"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger btn-sm ms-auto" title="মুছে ফেলুন" @click="handleDelete(item)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -353,5 +287,53 @@ const totalMinutes = computed(() => {
 @keyframes icon-spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
+}
+
+.content-thumb {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--surface-sunken);
+}
+
+.content-thumb-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.content-thumb-play {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(var(--brand-primary-rgb), 0.92);
+    color: var(--text-on-brand);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+}
+
+.content-clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.content-bengali {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.6;
+}
+
+.content-actions {
+    border-top: 1px solid var(--border-default);
 }
 </style>
