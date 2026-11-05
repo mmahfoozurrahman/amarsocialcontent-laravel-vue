@@ -1,14 +1,18 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
 import { useNotification } from '@/composables/useNotification';
 import { useTour } from '@/composables/useTour';
+import { useNavigation } from '@/composables/useNavigation';
 
 const { user, isAuthenticated, isAdmin, logout } = useAuth();
 const router = useRouter();
 const { success } = useNotification();
 const { openTour } = useTour();
+const { mainNavLinks, guestNavLinks } = useNavigation();
+
+const visibleNavLinks = computed(() => mainNavLinks.filter((link) => !link.adminOnly || isAdmin.value));
 
 const isNavOpen = ref(false);
 const isScrolled = ref(false);
@@ -74,93 +78,29 @@ const handleLogout = async () => {
                 id="navbarContent"
             >
                 <ul v-if="isAuthenticated" class="navbar-nav mx-lg-auto mb-2 mb-lg-0 gap-1 py-2 py-lg-0">
-                    <li class="nav-item">
+                    <li v-for="link in visibleNavLinks" :key="link.label" class="nav-item">
                         <router-link
-                            to="/dashboard"
+                            :to="link.to"
                             class="nav-link nav-pill-link"
+                            :class="link.linkClass"
                             active-class="active"
                             @click="closeNav"
                         >
-                            <i class="bi bi-speedometer2"></i>
-                            <span>ড্যাশবোর্ড</span>
-                        </router-link>
-                    </li>
-                    <li class="nav-item">
-                        <router-link
-                            to="/library"
-                            class="nav-link nav-pill-link"
-                            active-class="active"
-                            @click="closeNav"
-                        >
-                            <i class="bi bi-journal-richtext"></i>
-                            <span>লাইব্রেরি</span>
-                        </router-link>
-                    </li>
-                    <li class="nav-item">
-                        <router-link
-                            to="/courses"
-                            class="nav-link nav-pill-link"
-                            active-class="active"
-                            @click="closeNav"
-                        >
-                            <i class="bi bi-mortarboard"></i>
-                            <span>কোর্স ও লেসন</span>
-                        </router-link>
-                    </li>
-                    <li class="nav-item">
-                        <router-link
-                            to="/search"
-                            class="nav-link nav-pill-link"
-                            active-class="active"
-                            @click="closeNav"
-                        >
-                            <i class="bi bi-stars"></i>
-                            <span>এআই সার্চ</span>
-                        </router-link>
-                    </li>
-                    <li class="nav-item">
-                        <router-link
-                            to="/watch-history"
-                            class="nav-link nav-pill-link"
-                            active-class="active"
-                            @click="closeNav"
-                        >
-                            <i class="bi bi-clock-history"></i>
-                            <span>হিস্ট্রি ইমপোর্ট</span>
-                        </router-link>
-                    </li>
-                    <li v-if="isAdmin" class="nav-item">
-                        <router-link
-                            to="/admin"
-                            class="nav-link nav-pill-link admin-link"
-                            active-class="active"
-                            @click="closeNav"
-                        >
-                            <i class="bi bi-shield-lock"></i>
-                            <span>অ্যাডমিন</span>
+                            <i class="bi" :class="link.icon"></i>
+                            <span>{{ link.label }}</span>
                         </router-link>
                     </li>
                 </ul>
 
                 <ul v-else class="navbar-nav mx-lg-auto mb-2 mb-lg-0 gap-1 py-2 py-lg-0">
-                    <li class="nav-item">
+                    <li v-for="link in guestNavLinks" :key="link.label" class="nav-item">
                         <router-link
-                            :to="{ path: '/', hash: '#features' }"
+                            :to="link.to"
                             class="nav-link nav-pill-link"
                             @click="closeNav"
                         >
-                            <i class="bi bi-grid"></i>
-                            <span>ফিচার</span>
-                        </router-link>
-                    </li>
-                    <li class="nav-item">
-                        <router-link
-                            :to="{ path: '/', hash: '#why-us' }"
-                            class="nav-link nav-pill-link"
-                            @click="closeNav"
-                        >
-                            <i class="bi bi-lightbulb"></i>
-                            <span>কেন আমরা</span>
+                            <i class="bi" :class="link.icon"></i>
+                            <span>{{ link.label }}</span>
                         </router-link>
                     </li>
                 </ul>
