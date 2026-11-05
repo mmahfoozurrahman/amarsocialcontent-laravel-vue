@@ -1,9 +1,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { marked } from 'marked';
-import DOMPurify from 'dompurify';
 import api from '@/services/api';
+import { renderMarkdown } from '@/services/markdown';
 import { useNotification } from '@/composables/useNotification';
 import EmbeddedYouTubePlayer from '@/components/content/EmbeddedYouTubePlayer.vue';
 import TagSelector from '@/components/content/TagSelector.vue';
@@ -46,12 +45,7 @@ const fetchArticle = async () => {
 };
 
 // Render Markdown Safely
-const renderedHtml = computed(() => {
-    const raw = article.value?.article?.raw_markdown || '';
-    if (!raw) return '<p class="text-muted">কোনো কনটেন্ট পাওয়া যায়নি।</p>';
-    const html = marked.parse(raw);
-    return DOMPurify.sanitize(html);
-});
+const renderedHtml = computed(() => renderMarkdown(article.value?.article?.raw_markdown));
 
 // Bookmark Toggle
 const handleBookmarkToggle = async () => {
@@ -390,6 +384,9 @@ onUnmounted(() => {
 .markdown-body ul, .markdown-body ol {
     margin-bottom: 1.15rem;
     padding-left: 1.5rem;
+}
+.markdown-body ol {
+    list-style-type: bengali;
 }
 .markdown-body li {
     margin-bottom: 0.4rem;

@@ -1,9 +1,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { marked } from 'marked';
-import DOMPurify from 'dompurify';
 import api from '@/services/api';
+import { renderMarkdown } from '@/services/markdown';
 import EmbeddedYouTubePlayer from '@/components/content/EmbeddedYouTubePlayer.vue';
 
 const route = useRoute();
@@ -25,11 +24,7 @@ const fetchPublicArticle = async () => {
     }
 };
 
-const renderedHtml = computed(() => {
-    const raw = article.value?.article?.raw_markdown || '';
-    if (!raw) return '<p class="text-muted">কোনো কনটেন্ট পাওয়া যায়নি।</p>';
-    return DOMPurify.sanitize(marked.parse(raw));
-});
+const renderedHtml = computed(() => renderMarkdown(article.value?.article?.raw_markdown));
 
 onMounted(() => {
     fetchPublicArticle();

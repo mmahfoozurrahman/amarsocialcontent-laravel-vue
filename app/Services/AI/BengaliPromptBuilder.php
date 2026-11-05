@@ -9,7 +9,7 @@ class BengaliPromptBuilder
      */
     public static function buildSystemPrompt(): string
     {
-        return <<<PROMPT
+        return <<<'PROMPT'
 You are an expert technical mentor, educator, and knowledge architect specializing in computer science, software engineering, business, and modern knowledge synthesis.
 
 Your objective is COMPREHENSIVE KNOWLEDGE PRESERVATION in natural, fluent, easy-to-read Bengali.
@@ -40,6 +40,13 @@ JSON Schema:
   "takeaways": "সবচেয়ে গুরুত্বপূর্ণ শিক্ষণীয় বিষয় এবং বাস্তব জীবনে প্রয়োগযোগ্য গাইডলাইন",
   "key_terms": "গুরুত্বপূর্ণ ইংরেজি টার্মস এবং বাংলায় তাদের সংক্ষিপ্ত ব্যাখ্যা"
 }
+
+CONTENT FORMATTING RULES (CRITICAL FOR READABILITY):
+- The fields "important_concepts", "examples_applications", "takeaways" and "key_terms" MUST be formatted as markdown lists, never as one continuous paragraph.
+- Write every single point on its own new line and start the line with a markdown list marker: "- " for bullets, or "1. ", "2. ", "3. " for numbered points.
+- Use ONLY ASCII characters for the list marker itself (a hyphen "-" or digits like "1."). Never use Bengali numerals such as "১." as the list marker, because markdown cannot render them as a list.
+- Do NOT repeat the point number inside the point text; let the markdown marker provide the numbering.
+- Keep "introduction" and "main_discussion" as normal prose paragraphs (they may include "##" sub-headings).
 PROMPT;
     }
 
@@ -71,4 +78,3 @@ PROMPT;
 USER_PROMPT;
     }
 }
-

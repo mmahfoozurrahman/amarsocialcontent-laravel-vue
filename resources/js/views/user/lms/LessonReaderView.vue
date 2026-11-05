@@ -1,10 +1,9 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { marked } from 'marked';
-import DOMPurify from 'dompurify';
 import { useLms } from '@/composables/useLms';
 import { useNotification } from '@/composables/useNotification';
+import { renderMarkdown } from '@/services/markdown';
 import EmbeddedYouTubePlayer from '@/components/content/EmbeddedYouTubePlayer.vue';
 
 const route = useRoute();
@@ -45,12 +44,7 @@ const nextLesson = computed(() => {
 });
 
 // Render Markdown Content
-const renderedHtml = computed(() => {
-    const articleMarkdown = currentLesson.value?.aggregated_content?.article?.raw_markdown;
-    const customContent = currentLesson.value?.content;
-    const textToRender = articleMarkdown || customContent || '<p class="text-muted">কোনো কনটেন্ট পাওয়া যায়নি।</p>';
-    return DOMPurify.sanitize(marked.parse(textToRender));
-});
+const renderedHtml = computed(() => renderMarkdown(currentLesson.value?.aggregated_content?.article?.raw_markdown || currentLesson.value?.content));
 
 // Toggle completion
 const handleToggleComplete = async () => {
