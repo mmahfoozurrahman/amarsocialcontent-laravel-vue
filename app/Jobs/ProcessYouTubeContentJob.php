@@ -18,6 +18,7 @@ class ProcessYouTubeContentJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 2;
+
     public int $timeout = 180;
 
     public function __construct(
@@ -33,11 +34,12 @@ class ProcessYouTubeContentJob implements ShouldQueue
             // If manual transcript is provided
             if ($this->manualTranscript) {
                 $generatorService->processContent($this->content, $this->manualTranscript);
+
                 return;
             }
 
             // Step 1: If transcript does not exist yet, extract it
-            if (!$this->content->transcript) {
+            if (! $this->content->transcript) {
                 $this->content->update(['status' => 'extracting_transcript']);
 
                 $transcriptData = $youtubeService->extractTranscript($this->content->youtube_video_id);
@@ -49,11 +51,13 @@ class ProcessYouTubeContentJob implements ShouldQueue
                         'language' => $transcriptData['language'] ?? 'en',
                         'is_manual' => false,
                     ]);
+                    $this->content->load('transcript');
                 } else {
                     $this->content->update([
                         'status' => 'failed',
                         'error_message' => 'এই ভিডিওটির অটোমেটিক ক্যাপশন বা সাবটাইটেল উন্মুক্ত নেই। অনুগ্রহ করে "ম্যানুয়াল ট্রান্সক্রিপ্ট" অপশন ব্যবহার করুন।',
                     ]);
+
                     return;
                 }
             }
@@ -68,4 +72,3 @@ class ProcessYouTubeContentJob implements ShouldQueue
         }
     }
 }
-

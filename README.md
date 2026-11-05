@@ -12,7 +12,7 @@
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://mysql.com)
 [![Groq](https://img.shields.io/badge/Groq-Cloud_AI-F55036?style=for-the-badge)](https://groq.com)
 [![Google Gemini](https://img.shields.io/badge/Google-Gemini_AI-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev)
-[![Tests Passing](https://img.shields.io/badge/Tests-52%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
+[![Tests Passing](https://img.shields.io/badge/Tests-57%20Passed%20(100%25)-success?style=for-the-badge)](tests/)
 
 ---
 
@@ -60,8 +60,10 @@ Designed with strict zero-trust multi-tenancy, every user operates within their 
 ### 2. YouTube Aggregation & Transcript Engine
 - **Universal URL Support**: Works seamlessly with standard YouTube video links (`youtube.com/watch?v=...`), short URLs (`youtu.be/...`), and **YouTube Shorts** (`youtube.com/shorts/...`).
 - **Metadata Extraction**: Fetches titles, descriptions, durations, and high-resolution thumbnails via YouTube oEmbed API without requiring a heavy Google Cloud Console API quota.
-- **Caption Scraping**: Automatically pulls English and multilingual transcripts from YouTube timedtext caption tracks.
-- **Manual Transcript Fallback**: If a video lacks captions, a clean UI modal prompts the user to paste their own transcript or summary.
+- **Caption Scraping & Secondary Subtitle Engine**:
+  - Primary: Pulls English and multilingual transcripts from YouTube InnerTube and timedtext caption tracks.
+  - Secondary Engine (`downloadyoutubesubtitles.com` alternative): Automatically activates when default timedtext returns empty bodies or encounters Proof-of-Origin (PO-token) bot blocks, extracting official and ASR subtitles across all languages.
+- **Manual Transcript Fallback**: If a video lacks captions completely, a clean UI modal prompts the user to paste their own transcript or summary.
 - **Automatic Channel Tagging**: Ingested content is automatically tagged with the creator's channel name (e.g., `#freeCodeCamp`, `#TraversyMedia`) for instant filtering.
 
 ### 3. Dual AI Processing & BYOK Architecture

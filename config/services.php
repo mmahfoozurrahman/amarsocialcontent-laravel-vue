@@ -46,4 +46,9 @@ return [
         ],
     ],
 
+    'youtube' => [
+        'proxy' => env('YOUTUBE_PROXY'),
+        'python_binary' => env('PYTHON_BINARY', 'python'),
+    ],
+
 ];

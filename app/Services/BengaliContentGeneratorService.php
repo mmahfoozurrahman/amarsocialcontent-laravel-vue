@@ -6,8 +6,11 @@ use App\Models\AggregatedContent;
 use App\Models\ContentArticle;
 use App\Models\ContentChunk;
 use App\Models\ContentTranscript;
+use App\Models\Tag;
 use App\Services\AI\AIServiceManager;
+use App\Services\Search\SemanticSearchService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Throwable;
 
 class BengaliContentGeneratorService
@@ -38,12 +41,13 @@ class BengaliContentGeneratorService
                 );
             }
 
-            $transcriptRecord = $content->transcript;
-            if (!$transcriptRecord || empty($transcriptRecord->full_transcript)) {
+            $transcriptRecord = $content->transcript ?: $content->transcript()->first();
+            if (! $transcriptRecord || empty($transcriptRecord->full_transcript)) {
                 $content->update([
                     'status' => 'failed',
                     'error_message' => 'কোনো ট্রান্সক্রিপ্ট পাওয়া যায়নি। অনুগ্রহ করে ম্যানুয়ালি ট্রান্সক্রিপ্ট প্রদান করুন।',
                 ]);
+
                 return $content;
             }
 
@@ -94,10 +98,10 @@ class BengaliContentGeneratorService
                 ]);
 
                 // Ensure channel name is tagged by default
-                if (!empty($content->channel_name)) {
-                    $channelTag = \App\Models\Tag::firstOrCreate(
+                if (! empty($content->channel_name)) {
+                    $channelTag = Tag::firstOrCreate(
                         ['user_id' => $content->user_id, 'name' => trim($content->channel_name)],
-                        ['slug' => \Illuminate\Support\Str::slug(trim($content->channel_name))]
+                        ['slug' => Str::slug(trim($content->channel_name))]
                     );
                     $content->tags()->syncWithoutDetaching([$channelTag->id]);
                 }
@@ -105,9 +109,9 @@ class BengaliContentGeneratorService
 
             // 6. Generate and store semantic embeddings for search indexing
             try {
-                app(\App\Services\Search\SemanticSearchService::class)->indexContent($content);
-            } catch (\Throwable $e) {
-                \Log::warning('Automatic embedding indexing failed: ' . $e->getMessage());
+                app(SemanticSearchService::class)->indexContent($content);
+            } catch (Throwable $e) {
+                \Log::warning('Automatic embedding indexing failed: '.$e->getMessage());
             }
 
             return $content->fresh(['article', 'transcript', 'chunks']);
@@ -136,7 +140,7 @@ class BengaliContentGeneratorService
 
         foreach ($words as $word) {
             $wordLen = mb_strlen($word);
-            if ($currentLength + $wordLen > self::CHUNK_SIZE_CHARS && !empty($currentChunk)) {
+            if ($currentLength + $wordLen > self::CHUNK_SIZE_CHARS && ! empty($currentChunk)) {
                 $chunkText = implode(' ', $currentChunk);
                 ContentChunk::create([
                     'aggregated_content_id' => $content->id,
@@ -153,7 +157,7 @@ class BengaliContentGeneratorService
             }
         }
 
-        if (!empty($currentChunk)) {
+        if (! empty($currentChunk)) {
             $chunkText = implode(' ', $currentChunk);
             ContentChunk::create([
                 'aggregated_content_id' => $content->id,
@@ -164,4 +168,3 @@ class BengaliContentGeneratorService
         }
     }
 }
-
