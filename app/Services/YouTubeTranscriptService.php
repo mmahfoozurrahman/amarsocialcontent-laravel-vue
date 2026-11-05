@@ -533,7 +533,7 @@ class YouTubeTranscriptService
             return null;
         }
 
-        $pythonBin = config('services.youtube.python_binary', env('PYTHON_BINARY', 'python'));
+        $pythonBin = $this->resolvePythonBinary();
         $preferredLangs = $translateTo ? "{$translateTo},en,bn,hi" : 'en,en-US,en-GB,bn,hi';
         $proxy = config('services.youtube.proxy', '');
 
@@ -579,5 +579,35 @@ class YouTubeTranscriptService
         }
 
         return null;
+    }
+
+    /**
+     * Resolve the Python binary path, prioritizing explicitly configured path
+     * and detecting local Windows/Unix installations to avoid WindowsApps stub.
+     */
+    protected function resolvePythonBinary(): string
+    {
+        $configured = config('services.youtube.python_binary', env('PYTHON_BINARY'));
+        if (! empty($configured) && file_exists($configured)) {
+            return $configured;
+        }
+
+        $candidates = [
+            'D:\\python3\\python.exe',
+            'C:\\Python314\\python.exe',
+            'C:\\Python313\\python.exe',
+            'C:\\Python312\\python.exe',
+            'C:\\Python311\\python.exe',
+            '/usr/bin/python3',
+            '/usr/local/bin/python3',
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (file_exists($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return ! empty($configured) ? $configured : 'python';
     }
 }
