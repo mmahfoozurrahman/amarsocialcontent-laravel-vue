@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AIHealthController;
 use App\Http\Controllers\Auth\CurrentUserController;
 use App\Http\Controllers\Auth\LoginOtpController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -7,12 +10,15 @@ use App\Http\Controllers\Auth\VerifyOtpController;
 use App\Http\Controllers\Public\PublicArticleController;
 use App\Http\Controllers\User\AggregatedContentController;
 use App\Http\Controllers\User\BookmarkController;
-use App\Http\Controllers\User\ChapterController;
-use App\Http\Controllers\User\CourseController;
-use App\Http\Controllers\User\LessonController;
+use App\Http\Controllers\User\CollectionController;
+use App\Http\Controllers\User\NoteController;
 use App\Http\Controllers\User\PersonalNoteController;
+use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\ReadingHistoryController;
+use App\Http\Controllers\User\SearchController;
+use App\Http\Controllers\User\SectionController;
 use App\Http\Controllers\User\TagController;
+use App\Http\Controllers\User\WatchHistoryImportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -66,46 +72,46 @@ Route::prefix('user')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/articles/{id}/reading-progress', [ReadingHistoryController::class, 'updateProgress']);
     Route::get('/reading-timeline', [ReadingHistoryController::class, 'getTimeline']);
 
-    // LMS Knowledge Organization: Courses
-    Route::get('/courses', [CourseController::class, 'index']);
-    Route::post('/courses', [CourseController::class, 'store']);
-    Route::get('/courses/{id}', [CourseController::class, 'show']);
-    Route::put('/courses/{id}', [CourseController::class, 'update']);
-    Route::delete('/courses/{id}', [CourseController::class, 'destroy']);
-    Route::post('/courses/reorder', [CourseController::class, 'reorder']);
+    // Second Brain Knowledge Organization: Collections
+    Route::get('/collections', [CollectionController::class, 'index']);
+    Route::post('/collections', [CollectionController::class, 'store']);
+    Route::get('/collections/{id}', [CollectionController::class, 'show']);
+    Route::put('/collections/{id}', [CollectionController::class, 'update']);
+    Route::delete('/collections/{id}', [CollectionController::class, 'destroy']);
+    Route::post('/collections/reorder', [CollectionController::class, 'reorder']);
 
-    // LMS Knowledge Organization: Chapters
-    Route::post('/courses/{courseId}/chapters', [ChapterController::class, 'store']);
-    Route::put('/chapters/{id}', [ChapterController::class, 'update']);
-    Route::delete('/chapters/{id}', [ChapterController::class, 'destroy']);
-    Route::post('/courses/{courseId}/chapters/reorder', [ChapterController::class, 'reorder']);
+    // Second Brain Knowledge Organization: Sections
+    Route::post('/collections/{collectionId}/sections', [SectionController::class, 'store']);
+    Route::put('/sections/{id}', [SectionController::class, 'update']);
+    Route::delete('/sections/{id}', [SectionController::class, 'destroy']);
+    Route::post('/collections/{collectionId}/sections/reorder', [SectionController::class, 'reorder']);
 
-    // LMS Knowledge Organization: Lessons
-    Route::post('/chapters/{chapterId}/lessons', [LessonController::class, 'store']);
-    Route::get('/lessons/{id}', [LessonController::class, 'show']);
-    Route::put('/lessons/{id}', [LessonController::class, 'update']);
-    Route::delete('/lessons/{id}', [LessonController::class, 'destroy']);
-    Route::post('/chapters/{chapterId}/lessons/reorder', [LessonController::class, 'reorder']);
-    Route::get('/unassigned-articles', [LessonController::class, 'unassignedArticles']);
+    // Second Brain Knowledge Organization: Notes
+    Route::post('/sections/{sectionId}/notes', [NoteController::class, 'store']);
+    Route::get('/notes/{id}', [NoteController::class, 'show']);
+    Route::put('/notes/{id}', [NoteController::class, 'update']);
+    Route::delete('/notes/{id}', [NoteController::class, 'destroy']);
+    Route::post('/sections/{sectionId}/notes/reorder', [NoteController::class, 'reorder']);
+    Route::get('/unassigned-articles', [NoteController::class, 'unassignedArticles']);
 
     // Semantic & Hybrid Search
-    Route::get('/search', [\App\Http\Controllers\User\SearchController::class, 'search']);
-    Route::get('/search/history', [\App\Http\Controllers\User\SearchController::class, 'history']);
-    Route::delete('/search/history', [\App\Http\Controllers\User\SearchController::class, 'clearHistory']);
+    Route::get('/search', [SearchController::class, 'search']);
+    Route::get('/search/history', [SearchController::class, 'history']);
+    Route::delete('/search/history', [SearchController::class, 'clearHistory']);
 
     // Google Takeout YouTube Watch History Import & Curation
-    Route::get('/watch-history/server-file-status', [\App\Http\Controllers\User\WatchHistoryImportController::class, 'serverFileStatus']);
-    Route::post('/watch-history/load-server-file', [\App\Http\Controllers\User\WatchHistoryImportController::class, 'loadServerFile']);
-    Route::post('/watch-history/upload', [\App\Http\Controllers\User\WatchHistoryImportController::class, 'upload']);
-    Route::get('/watch-history/items', [\App\Http\Controllers\User\WatchHistoryImportController::class, 'items']);
-    Route::get('/watch-history/channels', [\App\Http\Controllers\User\WatchHistoryImportController::class, 'channels']);
-    Route::post('/watch-history/import', [\App\Http\Controllers\User\WatchHistoryImportController::class, 'import']);
+    Route::get('/watch-history/server-file-status', [WatchHistoryImportController::class, 'serverFileStatus']);
+    Route::post('/watch-history/load-server-file', [WatchHistoryImportController::class, 'loadServerFile']);
+    Route::post('/watch-history/upload', [WatchHistoryImportController::class, 'upload']);
+    Route::get('/watch-history/items', [WatchHistoryImportController::class, 'items']);
+    Route::get('/watch-history/channels', [WatchHistoryImportController::class, 'channels']);
+    Route::post('/watch-history/import', [WatchHistoryImportController::class, 'import']);
 
     // User Profile & Personal Encrypted AI Settings
-    Route::get('/profile', [\App\Http\Controllers\User\ProfileController::class, 'show']);
-    Route::put('/profile', [\App\Http\Controllers\User\ProfileController::class, 'updateProfile']);
-    Route::put('/profile/ai-settings', [\App\Http\Controllers\User\ProfileController::class, 'updateAiSettings']);
-    Route::post('/profile/test-ai', [\App\Http\Controllers\User\ProfileController::class, 'testAiConnection']);
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::put('/profile', [ProfileController::class, 'updateProfile']);
+    Route::put('/profile/ai-settings', [ProfileController::class, 'updateAiSettings']);
+    Route::post('/profile/test-ai', [ProfileController::class, 'testAiConnection']);
 });
 
 /*
@@ -125,8 +131,8 @@ Route::prefix('public')->group(function () {
 */
 Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::get('/ping', fn () => response()->json(['message' => 'Admin authorized successfully.']));
-    Route::get('/stats', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'stats']);
-    Route::get('/ai-health', [\App\Http\Controllers\Admin\AIHealthController::class, 'health']);
-    Route::get('/ai-logs', [\App\Http\Controllers\Admin\AIHealthController::class, 'logs']);
-    Route::get('/activity-logs', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index']);
+    Route::get('/stats', [AdminDashboardController::class, 'stats']);
+    Route::get('/ai-health', [AIHealthController::class, 'health']);
+    Route::get('/ai-logs', [AIHealthController::class, 'logs']);
+    Route::get('/activity-logs', [ActivityLogController::class, 'index']);
 });

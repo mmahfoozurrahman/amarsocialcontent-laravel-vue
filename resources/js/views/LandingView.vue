@@ -10,9 +10,9 @@ const features = [
         text: 'ইংরেজি টেকনিক্যাল টার্ম অটুট রেখে ভিডিওর মূল কনসেপ্ট, সারসংক্ষেপ ও অ্যাকশনেবল স্টেপস খাঁটি বাংলায় গুছিয়ে লেখা আর্টিকেল।',
     },
     {
-        icon: 'bi-mortarboard',
-        title: 'ব্যক্তিগত LMS কোর্স বিল্ডার',
-        text: 'কোর্স → চ্যাপ্টার → লেসন কাঠামোয় নিজের সিলেবাস সাজান, প্রগ্রেস ট্র্যাক করুন এবং আগের-পরের লেসনে সহজে যান।',
+        icon: 'bi-brain',
+        title: 'ব্যক্তিগত সেকেন্ড ব্রেন বিল্ডার',
+        text: 'কালেকশনস → সেকশনস → নোটস কাঠামোয় নিজের সিলেবাস সাজান, প্রগ্রেস ট্র্যাক করুন এবং আগের-পরের নোটসে সহজে যান।',
     },
     {
         icon: 'bi-search-heart',
@@ -24,7 +24,7 @@ const features = [
 const stats = [
     { value: '৭৬৮', label: 'ডাইমেনশনাল ভেক্টর', hint: 'ভাবার্থ এমবেডিং' },
     { value: '৭০/৩০', label: 'ভেক্টর ও ফুলটেক্সট', hint: 'হাইব্রিড সার্চ অনুপাত' },
-    { value: '৩', label: 'স্তরের শেখার কাঠামো', hint: 'কোর্স → চ্যাপ্টার → লেসন' },
+    { value: '৩', label: 'স্তরের শেখার কাঠামো', hint: 'কালেকশনস → সেকশনস → নোটস' },
     { value: '৭', label: 'ধাপের গাইডেড ট্যুর', hint: 'প্রথমবারেই পুরো সিস্টেম' },
 ];
 </script>
@@ -43,7 +43,7 @@ const stats = [
                             সোশ্যাল মিডিয়ার জ্ঞানকে রূপান্তর করুন <span class="text-primary">ব্যক্তিগত সেকেন্ড ব্রেনে</span>
                         </h1>
                         <p class="hero-lead mb-4">
-                            ইউটিউব ভিডিও ও শর্টসের হারিয়ে যাওয়া মূল্যবান জ্ঞানকে বাংলায় সুসংগঠিত, সহজবোধ্য ও বিস্তারিত লার্নিং ম্যাটেরিয়ালে রূপান্তর করুন। কোর্স ও চ্যাপ্টারে সাজান এবং যেকোনো সময় সিম্যান্টিক সার্চের মাধ্যমে খুঁজে নিন।
+                            ইউটিউব ভিডিও ও শর্টসের হারিয়ে যাওয়া মূল্যবান জ্ঞানকে বাংলায় সুসংগঠিত, সহজবোধ্য ও বিস্তারিত লার্নিং ম্যাটেরিয়ালে রূপান্তর করুন। কালেকশনস ও সেকশনসে সাজান এবং যেকোনো সময় সিম্যান্টিক সার্চের মাধ্যমে খুঁজে নিন।
                         </p>
 
                         <div class="d-flex flex-wrap gap-3 mb-4">
@@ -69,7 +69,7 @@ const stats = [
                             <div class="col-sm-4">
                                 <div class="d-flex align-items-center gap-2">
                                     <i class="bi bi-check-circle-fill text-success fs-5"></i>
-                                    <span class="fw-semibold text-secondary small">ব্যক্তিগত LMS কোর্স বিল্ডার</span>
+                                    <span class="fw-semibold text-secondary small">ব্যক্তিগত সেকেন্ড ব্রেন বিল্ডার</span>
                                 </div>
                             </div>
                             <div class="col-sm-4">
@@ -119,7 +119,7 @@ const stats = [
                             <div class="pipeline-step">
                                 <p class="small text-secondary mb-2">ধাপ ৩ — সাজান, খুঁজুন ও শেয়ার করুন</p>
                                 <div class="d-flex flex-wrap gap-2">
-                                    <span class="pipeline-chip"><i class="bi bi-mortarboard"></i> কোর্সে যোগ করুন</span>
+                                    <span class="pipeline-chip"><i class="bi bi-mortarboard"></i> কালেকশনসে যোগ করুন</span>
                                     <span class="pipeline-chip"><i class="bi bi-search-heart"></i> সার্চে খুঁজুন</span>
                                     <span class="pipeline-chip"><i class="bi bi-share"></i> শেয়ার করুন</span>
                                 </div>
@@ -136,7 +136,7 @@ const stats = [
                 <div class="section-heading text-center">
                     <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 mb-3">মূল ফিচার</span>
                     <h2 class="section-title fw-bold mb-2">তিনটি ধাপে জ্ঞান আপনার নিয়ন্ত্রণে</h2>
-                    <p class="text-secondary mb-0">ভিডিও ইনজেস্ট থেকে গুছানো আর্টিকেল, কোর্স ও সার্চ — সব একই প্ল্যাটফর্মে।</p>
+                    <p class="text-secondary mb-0">ভিডিও ইনজেস্ট থেকে গুছানো আর্টিকেল, কালেকশনস ও সার্চ — সব একই প্ল্যাটফর্মে।</p>
                 </div>
 
                 <div class="row g-4">
@@ -174,7 +174,7 @@ const stats = [
                 <div class="quote-block text-center mx-auto">
                     <i class="bi bi-quote quote-mark"></i>
                     <p class="quote-text fw-semibold mb-0">
-                        ভিডিও দেখা মানে জ্ঞান হারানো নয় — দেখুন, বাংলায় পড়ুন, কোর্সে সাজান, যেকোনো দিন খুঁজে নিন।
+                        ভিডিও দেখা মানে জ্ঞান হারানো নয় — দেখুন, বাংলায় পড়ুন, কালেকশনসে সাজান, যেকোনো দিন খুঁজে নিন।
                     </p>
                 </div>
             </div>

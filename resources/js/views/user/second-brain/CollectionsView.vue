@@ -1,12 +1,12 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { useLms } from '@/composables/useLms';
+import { useSecondBrain } from '@/composables/useSecondBrain';
 import { useNotification } from '@/composables/useNotification';
 import { useConfirm } from '@/composables/useConfirm';
 
 const router = useRouter();
-const { courses, isLoading, isSaving, fetchCourses, createCourse, deleteCourse } = useLms();
+const { collections, isLoading, isSaving, fetchCollections, createCollection, deleteCollection } = useSecondBrain();
 const { success, error } = useNotification();
 const { confirm } = useConfirm();
 
@@ -22,61 +22,61 @@ const openCreateModal = () => {
     showModal.value = true;
 };
 
-const handleCreateCourse = async () => {
+const handleCreateCollection = async () => {
     if (!title.value.trim()) return;
     try {
-        const res = await createCourse({
+        const res = await createCollection({
             title: title.value.trim(),
             description: description.value.trim(),
             visibility: visibility.value,
         });
-        success('কোর্স সফলভাবে তৈরি হয়েছে।');
+        success('কালেকশনস সফলভাবে তৈরি হয়েছে।');
         showModal.value = false;
-        router.push(`/courses/${res.data.id}/builder`);
+        router.push(`/collections/${res.data.id}/builder`);
     } catch (err) {
-        error('কোর্স তৈরি করতে সমস্যা হয়েছে।');
+        error('কালেকশনস তৈরি করতে সমস্যা হয়েছে।');
     }
 };
 
-const handleDelete = async (course) => {
+const handleDelete = async (collection) => {
     const isConfirmed = await confirm({
-        title: 'কোর্স মুছে ফেলুন',
-        message: `"${course.title}" কোর্সটি এবং এর অন্তর্গত সকল চ্যাপ্টার ও লেসন স্থায়ীভাবে মুছে যাবে। এটি ফিরিয়ে আনা যাবে না।`,
-        confirmLabel: 'হ্যাঁ, কোর্স মুছুন',
+        title: 'কালেকশনস মুছে ফেলুন',
+        message: `"${collection.title}" কালেকশনসটি এবং এর অন্তর্গত সকল সেকশনস ও নোটস স্থায়ীভাবে মুছে যাবে। এটি ফিরিয়ে আনা যাবে না।`,
+        confirmLabel: 'হ্যাঁ, কালেকশনস মুছুন',
         cancelLabel: 'বাতিল',
     });
 
     if (!isConfirmed) return;
 
     try {
-        await deleteCourse(course.id);
-        success('কোর্স সফলভাবে মুছে ফেলা হয়েছে।');
+        await deleteCollection(collection.id);
+        success('কালেকশনস সফলভাবে মুছে ফেলা হয়েছে।');
     } catch (e) {
-        error('কোর্স মুছতে সমস্যা হয়েছে।');
+        error('কালেকশনস মুছতে সমস্যা হয়েছে।');
     }
 };
 
 onMounted(() => {
-    fetchCourses();
+    fetchCollections();
 });
 </script>
 
 <template>
-    <div class="courses-page py-4">
+    <div class="collections-page py-4">
         <div class="container">
             <!-- Header -->
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom">
                 <div>
                     <h2 class="fw-bold mb-1 text-dark">
-                        <i class="bi bi-mortarboard text-primary me-2"></i>ব্যক্তিগত LMS ও কোর্সসমূহ
+                        <i class="bi bi-mortarboard text-primary me-2"></i>ব্যক্তিগত Second Brain ও কালেকশনসসমূহ
                     </h2>
                     <p class="text-secondary small mb-0">
-                        আপনার সংরক্ষিত ইউটিউব ভিডিও ও নোটসমূহকে কোর্স, চ্যাপ্টার ও লেসন আকারে সুসংগঠিত করুন।
+                        আপনার সংরক্ষিত ইউটিউব ভিডিও ও নোটসমূহকে কালেকশনস, সেকশনস ও নোটস আকারে সুসংগঠিত করুন।
                     </p>
                 </div>
                 <div class="d-flex gap-2 mt-3 mt-sm-0">
                     <button class="btn btn-primary btn-sm px-3" @click="openCreateModal">
-                        <i class="bi bi-plus-circle me-1"></i> নতুন কোর্স তৈরি করুন
+                        <i class="bi bi-plus-circle me-1"></i> নতুন কালেকশনস তৈরি করুন
                     </button>
                 </div>
             </div>
@@ -84,32 +84,32 @@ onMounted(() => {
             <!-- Loading State -->
             <div v-if="isLoading" class="text-center py-5">
                 <div class="spinner-border text-primary" role="status"></div>
-                <p class="small text-muted mt-2">কোর্সসমূহ লোড হচ্ছে...</p>
+                <p class="small text-muted mt-2">কালেকশনসসমূহ লোড হচ্ছে...</p>
             </div>
 
             <!-- Empty State -->
-            <div v-else-if="courses.length === 0" class="card border-0 shadow-sm p-5 text-center bg-white rounded-4">
+            <div v-else-if="collections.length === 0" class="card border-0 shadow-sm p-5 text-center bg-white rounded-4">
                 <i class="bi bi-mortarboard text-muted fs-1 mb-2"></i>
-                <h5 class="fw-bold text-dark">এখনো কোনো কোর্স তৈরি করা হয়নি</h5>
+                <h5 class="fw-bold text-dark">এখনো কোনো কালেকশনস তৈরি করা হয়নি</h5>
                 <p class="text-secondary small mb-3 max-w-400 mx-auto">
-                    আপনার সংরক্ষিত ইউটিউব ভিডিওগুলোকে সম্পর্কিত বিষয়ে সাজিয়ে নিজের মতো করে কোর্স তৈরি করুন।
+                    আপনার সংরক্ষিত ইউটিউব ভিডিওগুলোকে সম্পর্কিত বিষয়ে সাজিয়ে নিজের মতো করে কালেকশনস তৈরি করুন।
                 </p>
                 <div>
                     <button class="btn btn-primary btn-sm px-4" @click="openCreateModal">
-                        <i class="bi bi-plus-circle me-1"></i> প্রথম কোর্স তৈরি করুন
+                        <i class="bi bi-plus-circle me-1"></i> প্রথম কালেকশনস তৈরি করুন
                     </button>
                 </div>
             </div>
 
-            <!-- Course Cards Grid -->
+            <!-- Collection Cards Grid -->
             <div v-else class="row g-4">
-                <div v-for="course in courses" :key="course.id" class="col-md-6 col-lg-4">
+                <div v-for="collection in collections" :key="collection.id" class="col-md-6 col-lg-4">
                     <div class="card card-hover h-100 overflow-hidden d-flex flex-column">
                         <div class="card-body p-4 d-flex flex-column">
                             <div class="d-flex justify-content-between align-items-start mb-2">
-                                <span class="badge" :class="course.visibility === 'public' ? 'bg-success-subtle text-success' : 'bg-light text-secondary border'">
-                                    <i class="bi" :class="course.visibility === 'public' ? 'bi-globe2' : 'bi-lock'"></i>
-                                    {{ course.visibility === 'public' ? 'Public Course' : 'Private' }}
+                                <span class="badge" :class="collection.visibility === 'public' ? 'bg-success-subtle text-success' : 'bg-light text-secondary border'">
+                                    <i class="bi" :class="collection.visibility === 'public' ? 'bi-globe2' : 'bi-lock'"></i>
+                                    {{ collection.visibility === 'public' ? 'Public Collection' : 'Private' }}
                                 </span>
 
                                 <div class="dropdown">
@@ -118,14 +118,14 @@ onMounted(() => {
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 small">
                                         <li>
-                                            <router-link :to="`/courses/${course.id}/builder`" class="dropdown-item">
+                                            <router-link :to="`/collections/${collection.id}/builder`" class="dropdown-item">
                                                 <i class="bi bi-pencil me-2 text-primary"></i> এডিট ও সাজান
                                             </router-link>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li>
-                                            <button class="dropdown-item text-danger" @click="handleDelete(course)">
-                                                <i class="bi bi-trash me-2"></i> কোর্স মুছুন
+                                            <button class="dropdown-item text-danger" @click="handleDelete(collection)">
+                                                <i class="bi bi-trash me-2"></i> কালেকশনস মুছুন
                                             </button>
                                         </li>
                                     </ul>
@@ -133,31 +133,31 @@ onMounted(() => {
                             </div>
 
                             <h5 class="fw-bold text-dark mb-2">
-                                {{ course.title }}
+                                {{ collection.title }}
                             </h5>
 
                             <p class="text-secondary small line-clamp-2 mb-3 flex-grow-1">
-                                {{ course.description || 'কোনো বিবরণ যোগ করা হয়নি।' }}
+                                {{ collection.description || 'কোনো বিবরণ যোগ করা হয়নি।' }}
                             </p>
 
-                            <!-- Course Stats -->
+                            <!-- Collection Stats -->
                             <div class="d-flex align-items-center gap-3 smaller text-muted mb-3 py-2 border-top border-bottom">
-                                <span><i class="bi bi-folder2-open text-primary me-1"></i> {{ course.chapters_count }} চ্যাপ্টার</span>
-                                <span><i class="bi bi-file-earmark-play text-info me-1"></i> {{ course.lessons_count }} লেসন</span>
+                                <span><i class="bi bi-folder2-open text-primary me-1"></i> {{ collection.sections_count }} সেকশনস</span>
+                                <span><i class="bi bi-file-earmark-play text-info me-1"></i> {{ collection.notes_count }} নোটস</span>
                             </div>
 
                             <!-- Progress Bar -->
                             <div class="mb-3">
                                 <div class="d-flex justify-content-between align-items-center smaller text-muted mb-1">
                                     <span>লার্নিং অগ্রগতি</span>
-                                    <span class="fw-semibold text-primary">{{ course.progress_percentage }}%</span>
+                                    <span class="fw-semibold text-primary">{{ collection.progress_percentage }}%</span>
                                 </div>
                                 <div class="progress" style="height: 6px;">
                                     <div
                                         class="progress-bar bg-primary"
                                         role="progressbar"
-                                        :style="{ width: `${course.progress_percentage}%` }"
-                                        :aria-valuenow="course.progress_percentage"
+                                        :style="{ width: `${collection.progress_percentage}%` }"
+                                        :aria-valuenow="collection.progress_percentage"
                                         aria-valuemin="0"
                                         aria-valuemax="100"
                                     ></div>
@@ -166,12 +166,12 @@ onMounted(() => {
 
                             <!-- Actions -->
                             <div class="d-flex gap-2 pt-2">
-                                <router-link :to="`/courses/${course.id}/builder`" class="btn btn-outline-primary btn-sm flex-fill">
+                                <router-link :to="`/collections/${collection.id}/builder`" class="btn btn-outline-primary btn-sm flex-fill">
                                     <i class="bi bi-diagram-3 me-1"></i> বিল্ডার
                                 </router-link>
                                 <router-link
-                                    v-if="course.chapters && course.chapters.length > 0 && course.chapters[0].lessons && course.chapters[0].lessons.length > 0"
-                                    :to="`/lessons/${course.chapters[0].lessons[0].id}`"
+                                    v-if="collection.sections && collection.sections.length > 0 && collection.sections[0].notes && collection.sections[0].notes.length > 0"
+                                    :to="`/notes/${collection.sections[0].notes[0].id}`"
                                     class="btn btn-primary btn-sm flex-fill"
                                 >
                                     <i class="bi bi-play-circle me-1"></i> শুরু করুন
@@ -183,22 +183,22 @@ onMounted(() => {
             </div>
         </div>
 
-        <!-- Create Course Modal -->
+        <!-- Create Collection Modal -->
         <div v-if="showModal" class="modal-backdrop fade show"></div>
         <div v-if="showModal" class="modal fade show d-block" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow-lg rounded-4">
                     <div class="modal-header border-bottom py-3">
                         <h5 class="modal-title fw-bold text-dark mb-0">
-                            <i class="bi bi-mortarboard text-primary me-2"></i>নতুন কোর্স তৈরি করুন
+                            <i class="bi bi-mortarboard text-primary me-2"></i>নতুন কালেকশনস তৈরি করুন
                         </h5>
                         <button type="button" class="btn-close" :disabled="isSaving" @click="showModal = false"></button>
                     </div>
-                    <form @submit.prevent="handleCreateCourse">
+                    <form @submit.prevent="handleCreateCollection">
                         <div class="modal-body p-4">
                             <div class="mb-3">
                                 <label class="form-label small fw-semibold text-secondary">
-                                    কোর্সের শিরোনাম <span class="text-danger">*</span>
+                                    কালেকশনসের শিরোনাম <span class="text-danger">*</span>
                                 </label>
                                 <input
                                     v-model="title"
@@ -216,7 +216,7 @@ onMounted(() => {
                                     v-model="description"
                                     rows="3"
                                     class="form-control"
-                                    placeholder="এই কোর্সে কী কী জ্ঞান ও বিষয়বস্তু সংরক্ষণ করা হবে..."
+                                    placeholder="এই কালেকশনসে কী কী জ্ঞান ও বিষয়বস্তু সংরক্ষণ করা হবে..."
                                 ></textarea>
                             </div>
 
@@ -232,7 +232,7 @@ onMounted(() => {
                             <button type="button" class="btn btn-outline-secondary btn-sm" :disabled="isSaving" @click="showModal = false">বাতিল</button>
                             <button type="submit" class="btn btn-primary btn-sm px-4" :disabled="isSaving || !title.trim()">
                                 <span v-if="isSaving" class="spinner-border spinner-border-sm me-1"></span>
-                                কোর্স তৈরি করুন
+                                কালেকশনস তৈরি করুন
                             </button>
                         </div>
                     </form>

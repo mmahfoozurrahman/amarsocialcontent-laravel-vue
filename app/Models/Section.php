@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Chapter extends Model
+class Section extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'course_id',
+        'collection_id',
         'title',
         'description',
         'sort_order',
@@ -25,14 +25,14 @@ class Chapter extends Model
         ];
     }
 
-    public function course(): BelongsTo
+    public function collection(): BelongsTo
     {
-        return $this->belongsTo(Course::class);
+        return $this->belongsTo(Collection::class);
     }
 
-    public function lessons(): HasMany
+    public function notes(): HasMany
     {
-        return $this->hasMany(Lesson::class)->orderBy('sort_order');
+        return $this->hasMany(Note::class)->orderBy('sort_order');
     }
 }
 

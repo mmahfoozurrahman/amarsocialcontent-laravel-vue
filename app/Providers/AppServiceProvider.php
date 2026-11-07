@@ -3,16 +3,16 @@
 namespace App\Providers;
 
 use App\Models\AggregatedContent;
-use App\Models\Chapter;
-use App\Models\Course;
-use App\Models\Lesson;
+use App\Models\Collection;
+use App\Models\Note;
 use App\Models\PersonalNote;
+use App\Models\Section;
 use App\Models\Tag;
 use App\Policies\AggregatedContentPolicy;
-use App\Policies\ChapterPolicy;
-use App\Policies\CoursePolicy;
-use App\Policies\LessonPolicy;
+use App\Policies\CollectionPolicy;
+use App\Policies\NotePolicy;
 use App\Policies\PersonalNotePolicy;
+use App\Policies\SectionPolicy;
 use App\Policies\TagPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -35,8 +35,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(AggregatedContent::class, AggregatedContentPolicy::class);
         Gate::policy(Tag::class, TagPolicy::class);
         Gate::policy(PersonalNote::class, PersonalNotePolicy::class);
-        Gate::policy(Course::class, CoursePolicy::class);
-        Gate::policy(Chapter::class, ChapterPolicy::class);
-        Gate::policy(Lesson::class, LessonPolicy::class);
+        Gate::policy(Collection::class, CollectionPolicy::class);
+        Gate::policy(Section::class, SectionPolicy::class);
+        Gate::policy(Note::class, NotePolicy::class);
     }
 }

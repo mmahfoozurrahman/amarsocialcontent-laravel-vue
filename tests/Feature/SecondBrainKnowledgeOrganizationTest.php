@@ -3,29 +3,29 @@
 namespace Tests\Feature;
 
 use App\Models\AggregatedContent;
-use App\Models\Chapter;
-use App\Models\Course;
-use App\Models\Lesson;
+use App\Models\Section;
+use App\Models\Collection;
+use App\Models\Note;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class LmsKnowledgeOrganizationTest extends TestCase
+class SecondBrainKnowledgeOrganizationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_user_can_create_course_chapter_and_lesson(): void
+    public function test_user_can_create_collection_section_and_note(): void
     {
         $user = User::factory()->create();
 
-        // 1. Create Course
-        $courseResponse = $this->actingAs($user)
-            ->postJson('/api/user/courses', [
+        // 1. Create Collection
+        $collectionResponse = $this->actingAs($user)
+            ->postJson('/api/user/collections', [
                 'title' => 'Mastering Laravel Architecture',
-                'description' => 'Comprehensive course on advanced Laravel concepts.',
+                'description' => 'Comprehensive collection on advanced Laravel concepts.',
             ]);
 
-        $courseResponse->assertStatus(201)
+        $collectionResponse->assertStatus(201)
             ->assertJson([
                 'success' => true,
                 'data' => [
@@ -34,43 +34,43 @@ class LmsKnowledgeOrganizationTest extends TestCase
                 ],
             ]);
 
-        $courseId = $courseResponse->json('data.id');
+        $collectionId = $collectionResponse->json('data.id');
 
-        // 2. Create Chapter
-        $chapterResponse = $this->actingAs($user)
-            ->postJson("/api/user/courses/{$courseId}/chapters", [
-                'title' => 'Chapter 1: Multi-Tenancy & Security',
+        // 2. Create Section
+        $sectionResponse = $this->actingAs($user)
+            ->postJson("/api/user/collections/{$collectionId}/sections", [
+                'title' => 'Section 1: Multi-Tenancy & Security',
                 'description' => 'Isolating tenant records cleanly.',
             ]);
 
-        $chapterResponse->assertStatus(201)
+        $sectionResponse->assertStatus(201)
             ->assertJson([
                 'success' => true,
                 'data' => [
-                    'title' => 'Chapter 1: Multi-Tenancy & Security',
+                    'title' => 'Section 1: Multi-Tenancy & Security',
                 ],
             ]);
 
-        $chapterId = $chapterResponse->json('data.id');
+        $sectionId = $sectionResponse->json('data.id');
 
-        // 3. Create Lesson with Custom Notes
-        $lessonResponse = $this->actingAs($user)
-            ->postJson("/api/user/chapters/{$chapterId}/lessons", [
-                'title' => 'Lesson 1.1: IDOR Attack Mitigations',
+        // 3. Create Note with Custom Notes
+        $noteResponse = $this->actingAs($user)
+            ->postJson("/api/user/sections/{$sectionId}/notes", [
+                'title' => 'Note 1.1: IDOR Attack Mitigations',
                 'content' => 'Always verify user ownership on the server side.',
             ]);
 
-        $lessonResponse->assertStatus(201)
+        $noteResponse->assertStatus(201)
             ->assertJson([
                 'success' => true,
                 'data' => [
-                    'title' => 'Lesson 1.1: IDOR Attack Mitigations',
+                    'title' => 'Note 1.1: IDOR Attack Mitigations',
                     'is_completed' => false,
                 ],
             ]);
     }
 
-    public function test_user_can_link_aggregated_article_to_lesson(): void
+    public function test_user_can_link_aggregated_article_to_note(): void
     {
         $user = User::factory()->create();
 
@@ -83,19 +83,19 @@ class LmsKnowledgeOrganizationTest extends TestCase
             'status' => 'completed',
         ]);
 
-        $course = Course::create([
+        $collection = Collection::create([
             'user_id' => $user->id,
-            'title' => 'Clean Code Course',
+            'title' => 'Clean Code Collection',
         ]);
 
-        $chapter = Chapter::create([
-            'course_id' => $course->id,
+        $section = Section::create([
+            'collection_id' => $collection->id,
             'title' => 'SOLID Foundations',
         ]);
 
-        // Link the article to lesson
+        // Link the article to note
         $response = $this->actingAs($user)
-            ->postJson("/api/user/chapters/{$chapter->id}/lessons", [
+            ->postJson("/api/user/sections/{$section->id}/notes", [
                 'title' => 'Introduction to Single Responsibility',
                 'aggregated_content_id' => $article->id,
             ]);
@@ -109,13 +109,13 @@ class LmsKnowledgeOrganizationTest extends TestCase
                 ],
             ]);
 
-        $this->assertDatabaseHas('lessons', [
-            'chapter_id' => $chapter->id,
+        $this->assertDatabaseHas('notes', [
+            'section_id' => $section->id,
             'aggregated_content_id' => $article->id,
         ]);
     }
 
-    public function test_user_a_cannot_link_user_b_article_to_their_lesson(): void
+    public function test_user_a_cannot_link_user_b_article_to_their_note(): void
     {
         $userA = User::factory()->create();
         $userB = User::factory()->create();
@@ -130,21 +130,21 @@ class LmsKnowledgeOrganizationTest extends TestCase
             'status' => 'completed',
         ]);
 
-        // Course owned by User A
-        $courseA = Course::create([
+        // Collection owned by User A
+        $collectionA = Collection::create([
             'user_id' => $userA->id,
-            'title' => 'User A Course',
+            'title' => 'User A Collection',
         ]);
 
-        $chapterA = Chapter::create([
-            'course_id' => $courseA->id,
-            'title' => 'Chapter A',
+        $sectionA = Section::create([
+            'collection_id' => $collectionA->id,
+            'title' => 'Section A',
         ]);
 
         // User A attempts to steal and attach User B's article
         $response = $this->actingAs($userA)
-            ->postJson("/api/user/chapters/{$chapterA->id}/lessons", [
-                'title' => 'Unauthorized Linked Lesson',
+            ->postJson("/api/user/sections/{$sectionA->id}/notes", [
+                'title' => 'Unauthorized Linked Note',
                 'aggregated_content_id' => $articleB->id,
             ]);
 
@@ -158,93 +158,93 @@ class LmsKnowledgeOrganizationTest extends TestCase
         $userA = User::factory()->create();
         $userB = User::factory()->create();
 
-        $courseB = Course::create([
+        $collectionB = Collection::create([
             'user_id' => $userB->id,
-            'title' => 'User B Private Course',
+            'title' => 'User B Private Collection',
             'visibility' => 'private',
         ]);
 
-        $chapterB = Chapter::create([
-            'course_id' => $courseB->id,
-            'title' => 'User B Chapter',
+        $sectionB = Section::create([
+            'collection_id' => $collectionB->id,
+            'title' => 'User B Section',
         ]);
 
-        $lessonB = Lesson::create([
-            'chapter_id' => $chapterB->id,
-            'title' => 'User B Lesson',
+        $noteB = Note::create([
+            'section_id' => $sectionB->id,
+            'title' => 'User B Note',
         ]);
 
-        // 1. User A tries to view User B private course
+        // 1. User A tries to view User B private collection
         $this->actingAs($userA)
-            ->getJson("/api/user/courses/{$courseB->id}")
+            ->getJson("/api/user/collections/{$collectionB->id}")
             ->assertStatus(403);
 
-        // 2. User A tries to add a chapter to User B course
+        // 2. User A tries to add a section to User B collection
         $this->actingAs($userA)
-            ->postJson("/api/user/courses/{$courseB->id}/chapters", [
-                'title' => 'Hacked Chapter',
+            ->postJson("/api/user/collections/{$collectionB->id}/sections", [
+                'title' => 'Hacked Section',
             ])->assertStatus(403);
 
-        // 3. User A tries to add a lesson to User B chapter
+        // 3. User A tries to add a note to User B section
         $this->actingAs($userA)
-            ->postJson("/api/user/chapters/{$chapterB->id}/lessons", [
-                'title' => 'Hacked Lesson',
+            ->postJson("/api/user/sections/{$sectionB->id}/notes", [
+                'title' => 'Hacked Note',
             ])->assertStatus(403);
 
-        // 4. User A tries to update or delete User B lesson
+        // 4. User A tries to update or delete User B note
         $this->actingAs($userA)
-            ->putJson("/api/user/lessons/{$lessonB->id}", [
-                'title' => 'Altered Lesson Title',
+            ->putJson("/api/user/notes/{$noteB->id}", [
+                'title' => 'Altered Note Title',
             ])->assertStatus(403);
 
         $this->actingAs($userA)
-            ->deleteJson("/api/user/lessons/{$lessonB->id}")
+            ->deleteJson("/api/user/notes/{$noteB->id}")
             ->assertStatus(403);
     }
 
-    public function test_lesson_completion_and_course_progress_percentage(): void
+    public function test_note_completion_and_collection_progress_percentage(): void
     {
         $user = User::factory()->create();
 
-        $course = Course::create([
+        $collection = Collection::create([
             'user_id' => $user->id,
-            'title' => 'Progress Tracked Course',
+            'title' => 'Progress Tracked Collection',
         ]);
 
-        $chapter = Chapter::create([
-            'course_id' => $course->id,
-            'title' => 'Chapter 1',
+        $section = Section::create([
+            'collection_id' => $collection->id,
+            'title' => 'Section 1',
         ]);
 
-        $lesson1 = Lesson::create([
-            'chapter_id' => $chapter->id,
-            'title' => 'Lesson 1',
+        $note1 = Note::create([
+            'section_id' => $section->id,
+            'title' => 'Note 1',
             'is_completed' => false,
         ]);
 
-        $lesson2 = Lesson::create([
-            'chapter_id' => $chapter->id,
-            'title' => 'Lesson 2',
+        $note2 = Note::create([
+            'section_id' => $section->id,
+            'title' => 'Note 2',
             'is_completed' => false,
         ]);
 
-        $this->assertEquals(0, $course->progressPercentage());
+        $this->assertEquals(0, $collection->progressPercentage());
 
-        // Mark lesson 1 as completed
+        // Mark note 1 as completed
         $this->actingAs($user)
-            ->putJson("/api/user/lessons/{$lesson1->id}", [
+            ->putJson("/api/user/notes/{$note1->id}", [
                 'is_completed' => true,
             ])->assertStatus(200);
 
-        $this->assertEquals(50, $course->fresh()->progressPercentage());
+        $this->assertEquals(50, $collection->fresh()->progressPercentage());
 
-        // Mark lesson 2 as completed
+        // Mark note 2 as completed
         $this->actingAs($user)
-            ->putJson("/api/user/lessons/{$lesson2->id}", [
+            ->putJson("/api/user/notes/{$note2->id}", [
                 'is_completed' => true,
             ])->assertStatus(200);
 
-        $this->assertEquals(100, $course->fresh()->progressPercentage());
+        $this->assertEquals(100, $collection->fresh()->progressPercentage());
     }
 
     public function test_unassigned_articles_filter(): void
@@ -268,13 +268,13 @@ class LmsKnowledgeOrganizationTest extends TestCase
             'status' => 'completed',
         ]);
 
-        $course = Course::create(['user_id' => $user->id, 'title' => 'Test Course']);
-        $chapter = Chapter::create(['course_id' => $course->id, 'title' => 'Test Chapter']);
+        $collection = Collection::create(['user_id' => $user->id, 'title' => 'Test Collection']);
+        $section = Section::create(['collection_id' => $collection->id, 'title' => 'Test Section']);
 
-        // Attach article 1 to lesson
-        Lesson::create([
-            'chapter_id' => $chapter->id,
-            'title' => 'Lesson 1',
+        // Attach article 1 to note
+        Note::create([
+            'section_id' => $section->id,
+            'title' => 'Note 1',
             'aggregated_content_id' => $article1->id,
         ]);
 

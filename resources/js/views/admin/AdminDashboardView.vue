@@ -145,7 +145,7 @@ onMounted(() => {
                                     <span class="text-muted smaller fw-semibold">মোট স্টাডি ও পড়ার সময়</span>
                                     <h3 class="fw-bold text-dark mt-1 mb-0">{{ stats?.learning?.total_study_minutes || 0 }} মিনিট</h3>
                                     <span class="smaller text-info">
-                                        {{ stats?.learning?.total_courses || 0 }} টি কোর্স / {{ stats?.learning?.total_lessons || 0 }} টি লেসন
+                                        {{ stats?.learning?.total_collections || 0 }} টি কালেকশনস / {{ stats?.learning?.total_notes || 0 }} টি নোটস
                                     </span>
                                 </div>
                                 <div class="p-3 bg-info-subtle text-info rounded-3">

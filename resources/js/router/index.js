@@ -9,9 +9,9 @@ import LibraryView from '@/views/user/LibraryView.vue';
 import ArticleReaderView from '@/views/user/ArticleReaderView.vue';
 import PublicArticleView from '@/views/public/PublicArticleView.vue';
 import AdminDashboardView from '@/views/admin/AdminDashboardView.vue';
-import CoursesView from '@/views/user/lms/CoursesView.vue';
-import CourseBuilderView from '@/views/user/lms/CourseBuilderView.vue';
-import LessonReaderView from '@/views/user/lms/LessonReaderView.vue';
+import CollectionsView from '@/views/user/second-brain/CollectionsView.vue';
+import CollectionBuilderView from '@/views/user/second-brain/CollectionBuilderView.vue';
+import NoteReaderView from '@/views/user/second-brain/NoteReaderView.vue';
 import SearchView from '@/views/user/SearchView.vue';
 import WatchHistoryView from '@/views/user/WatchHistoryView.vue';
 import ProfileView from '@/views/user/ProfileView.vue';
@@ -47,21 +47,21 @@ const routes = [
         meta: { requiresAuth: true },
     },
     {
-        path: '/courses',
-        name: 'courses',
-        component: CoursesView,
+        path: '/collections',
+        name: 'collections',
+        component: CollectionsView,
         meta: { requiresAuth: true },
     },
     {
-        path: '/courses/:id/builder',
-        name: 'course-builder',
-        component: CourseBuilderView,
+        path: '/collections/:id/builder',
+        name: 'collection-builder',
+        component: CollectionBuilderView,
         meta: { requiresAuth: true },
     },
     {
-        path: '/lessons/:id',
-        name: 'lesson-reader',
-        component: LessonReaderView,
+        path: '/notes/:id',
+        name: 'note-reader',
+        component: NoteReaderView,
         meta: { requiresAuth: true },
     },
     {

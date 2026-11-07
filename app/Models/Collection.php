@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Str;
 
-class Course extends Model
+class Collection extends Model
 {
     use HasFactory;
 
@@ -34,15 +34,15 @@ class Course extends Model
     {
         parent::boot();
 
-        static::creating(function ($course) {
-            if (empty($course->slug)) {
-                $base = Str::slug($course->title) ?: 'course';
+        static::creating(function ($collection) {
+            if (empty($collection->slug)) {
+                $base = Str::slug($collection->title) ?: 'collection';
                 $slug = $base;
                 $counter = 1;
-                while (static::where('user_id', $course->user_id)->where('slug', $slug)->exists()) {
+                while (static::where('user_id', $collection->user_id)->where('slug', $slug)->exists()) {
                     $slug = $base . '-' . $counter++;
                 }
-                $course->slug = $slug;
+                $collection->slug = $slug;
             }
         });
     }
@@ -52,21 +52,21 @@ class Course extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function chapters(): HasMany
+    public function sections(): HasMany
     {
-        return $this->hasMany(Chapter::class)->orderBy('sort_order');
+        return $this->hasMany(Section::class)->orderBy('sort_order');
     }
 
-    public function lessons(): HasManyThrough
+    public function notes(): HasManyThrough
     {
-        return $this->hasManyThrough(Lesson::class, Chapter::class);
+        return $this->hasManyThrough(Note::class, Section::class);
     }
 
     public function progressPercentage(): int
     {
-        $total = $this->lessons()->count();
+        $total = $this->notes()->count();
         if ($total === 0) return 0;
-        $completed = $this->lessons()->where('is_completed', true)->count();
+        $completed = $this->notes()->where('is_completed', true)->count();
         return (int) round(($completed / $total) * 100);
     }
 }

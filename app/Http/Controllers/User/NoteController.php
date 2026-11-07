@@ -4,24 +4,24 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AggregatedContentResource;
-use App\Http\Resources\LessonResource;
+use App\Http\Resources\NoteResource;
 use App\Models\AggregatedContent;
-use App\Models\Chapter;
-use App\Models\Lesson;
+use App\Models\Section;
+use App\Models\Note;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 
-class LessonController extends Controller
+class NoteController extends Controller
 {
     /**
-     * Store a newly created lesson inside a chapter.
+     * Store a newly created note inside a section.
      */
-    public function store(Request $request, int $chapterId): JsonResponse
+    public function store(Request $request, int $sectionId): JsonResponse
     {
-        $chapter = Chapter::with('course')->findOrFail($chapterId);
-        Gate::authorize('update', $chapter);
+        $section = Section::with('collection')->findOrFail($sectionId);
+        Gate::authorize('update', $section);
 
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
@@ -35,15 +35,15 @@ class LessonController extends Controller
             $article = AggregatedContent::findOrFail($validated['aggregated_content_id']);
             if ($article->user_id !== $request->user()->id) {
                 throw ValidationException::withMessages([
-                    'aggregated_content_id' => ['আপনি শুধুমাত্র আপনার নিজের সংরক্ষিত আর্টিকেল লেসনে যুক্ত করতে পারবেন।'],
+                    'aggregated_content_id' => ['আপনি শুধুমাত্র আপনার নিজের সংরক্ষিত আর্টিকেল নোটসে যুক্ত করতে পারবেন।'],
                 ]);
             }
         }
 
-        $maxSort = $chapter->lessons()->max('sort_order') ?? 0;
+        $maxSort = $section->notes()->max('sort_order') ?? 0;
 
-        $lesson = Lesson::create([
-            'chapter_id' => $chapter->id,
+        $note = Note::create([
+            'section_id' => $section->id,
             'aggregated_content_id' => $validated['aggregated_content_id'] ?? null,
             'title' => trim($validated['title']),
             'content' => $validated['content'] ?? null,
@@ -54,50 +54,50 @@ class LessonController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'লেসন সফলভাবে তৈরি হয়েছে।',
-            'data' => new LessonResource($lesson->load('aggregatedContent.article')),
+            'message' => 'নোটস সফলভাবে তৈরি হয়েছে।',
+            'data' => new NoteResource($note->load('aggregatedContent.article')),
         ], 201);
     }
 
     /**
-     * Display the specified lesson with course hierarchy and content.
+     * Display the specified note with collection hierarchy and content.
      */
     public function show(Request $request, int $id): JsonResponse
     {
-        $lesson = Lesson::with([
-            'chapter.course.chapters.lessons.aggregatedContent',
+        $note = Note::with([
+            'section.collection.sections.notes.aggregatedContent',
             'aggregatedContent.article',
         ])->findOrFail($id);
 
-        Gate::authorize('view', $lesson);
+        Gate::authorize('view', $note);
 
         return response()->json([
             'success' => true,
-            'data' => new LessonResource($lesson),
+            'data' => new NoteResource($note),
         ]);
     }
 
     /**
-     * Update the specified lesson.
+     * Update the specified note.
      */
     public function update(Request $request, int $id): JsonResponse
     {
-        $lesson = Lesson::with('chapter.course')->findOrFail($id);
-        Gate::authorize('update', $lesson);
+        $note = Note::with('section.collection')->findOrFail($id);
+        Gate::authorize('update', $note);
 
         $validated = $request->validate([
             'title' => ['sometimes', 'required', 'string', 'max:255'],
             'content' => ['nullable', 'string'],
             'aggregated_content_id' => ['nullable', 'integer', 'exists:aggregated_contents,id'],
-            'chapter_id' => ['sometimes', 'integer', 'exists:chapters,id'],
+            'section_id' => ['sometimes', 'integer', 'exists:sections,id'],
             'visibility' => ['nullable', 'in:private,public'],
             'is_completed' => ['nullable', 'boolean'],
         ]);
 
-        // If chapter_id is being moved, verify caller owns destination chapter
-        if (!empty($validated['chapter_id']) && $validated['chapter_id'] != $lesson->chapter_id) {
-            $targetChapter = Chapter::with('course')->findOrFail($validated['chapter_id']);
-            Gate::authorize('update', $targetChapter);
+        // If section_id is being moved, verify caller owns destination section
+        if (!empty($validated['section_id']) && $validated['section_id'] != $note->section_id) {
+            $targetSection = Section::with('collection')->findOrFail($validated['section_id']);
+            Gate::authorize('update', $targetSection);
         }
 
         // CRITICAL TENANT CHECK: If changing linked article, verify ownership!
@@ -105,67 +105,67 @@ class LessonController extends Controller
             $article = AggregatedContent::findOrFail($validated['aggregated_content_id']);
             if ($article->user_id !== $request->user()->id) {
                 throw ValidationException::withMessages([
-                    'aggregated_content_id' => ['আপনি শুধুমাত্র আপনার নিজের সংরক্ষিত আর্টিকেল লেসনে যুক্ত করতে পারবেন।'],
+                    'aggregated_content_id' => ['আপনি শুধুমাত্র আপনার নিজের সংরক্ষিত আর্টিকেল নোটসে যুক্ত করতে পারবেন।'],
                 ]);
             }
         }
 
-        $lesson->update($validated);
+        $note->update($validated);
 
         return response()->json([
             'success' => true,
-            'message' => 'লেসন আপডেট সম্পন্ন হয়েছে।',
-            'data' => new LessonResource($lesson->fresh(['aggregatedContent.article'])),
+            'message' => 'নোটস আপডেট সম্পন্ন হয়েছে।',
+            'data' => new NoteResource($note->fresh(['aggregatedContent.article'])),
         ]);
     }
 
     /**
-     * Remove the specified lesson.
+     * Remove the specified note.
      */
     public function destroy(Request $request, int $id): JsonResponse
     {
-        $lesson = Lesson::with('chapter.course')->findOrFail($id);
-        Gate::authorize('delete', $lesson);
+        $note = Note::with('section.collection')->findOrFail($id);
+        Gate::authorize('delete', $note);
 
-        $lesson->delete();
+        $note->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'লেসনটি সফলভাবে মুছে ফেলা হয়েছে।',
+            'message' => 'নোটসটি সফলভাবে মুছে ফেলা হয়েছে।',
         ]);
     }
 
     /**
-     * Reorder lessons within a chapter.
+     * Reorder notes within a section.
      */
-    public function reorder(Request $request, int $chapterId): JsonResponse
+    public function reorder(Request $request, int $sectionId): JsonResponse
     {
-        $chapter = Chapter::with('course')->findOrFail($chapterId);
-        Gate::authorize('update', $chapter);
+        $section = Section::with('collection')->findOrFail($sectionId);
+        Gate::authorize('update', $section);
 
         $validated = $request->validate([
-            'lesson_ids' => ['required', 'array'],
-            'lesson_ids.*' => ['integer'],
+            'note_ids' => ['required', 'array'],
+            'note_ids.*' => ['integer'],
         ]);
 
-        foreach ($validated['lesson_ids'] as $index => $lessonId) {
-            Lesson::where('id', $lessonId)
-                ->where('chapter_id', $chapter->id)
+        foreach ($validated['note_ids'] as $index => $noteId) {
+            Note::where('id', $noteId)
+                ->where('section_id', $section->id)
                 ->update(['sort_order' => $index + 1]);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'লেসনের ক্রম সফলভাবে আপডেট হয়েছে।',
+            'message' => 'নোটসের ক্রম সফলভাবে আপডেট হয়েছে।',
         ]);
     }
 
     /**
-     * List user's articles not yet assigned to any lesson.
+     * List user's articles not yet assigned to any note.
      */
     public function unassignedArticles(Request $request): JsonResponse
     {
-        $assignedIds = Lesson::whereNotNull('aggregated_content_id')->pluck('aggregated_content_id');
+        $assignedIds = Note::whereNotNull('aggregated_content_id')->pluck('aggregated_content_id');
 
         $unassigned = $request->user()->aggregatedContents()
             ->where('status', 'completed')

@@ -77,34 +77,34 @@ class User extends Authenticatable
     /**
      * User's aggregated contents.
      */
-    public function aggregatedContents(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function aggregatedContents(): HasMany
     {
         return $this->hasMany(AggregatedContent::class);
     }
 
-    public function tags(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function tags(): HasMany
     {
         return $this->hasMany(Tag::class);
     }
 
-    public function personalNotes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function personalNotes(): HasMany
     {
         return $this->hasMany(PersonalNote::class);
     }
 
-    public function bookmarks(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function bookmarks(): HasMany
     {
         return $this->hasMany(Bookmark::class);
     }
 
-    public function readingHistories(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function readingHistories(): HasMany
     {
         return $this->hasMany(ContentReadingHistory::class);
     }
 
-    public function courses(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function collections(): HasMany
     {
-        return $this->hasMany(Course::class);
+        return $this->hasMany(Collection::class);
     }
 
     public function watchHistoryImports(): HasMany

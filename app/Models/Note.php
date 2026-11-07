@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Lesson extends Model
+class Note extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'chapter_id',
+        'section_id',
         'aggregated_content_id',
         'title',
         'content',
@@ -28,9 +28,9 @@ class Lesson extends Model
         ];
     }
 
-    public function chapter(): BelongsTo
+    public function section(): BelongsTo
     {
-        return $this->belongsTo(Chapter::class);
+        return $this->belongsTo(Section::class);
     }
 
     public function aggregatedContent(): BelongsTo

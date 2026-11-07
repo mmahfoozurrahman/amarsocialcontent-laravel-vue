@@ -3,31 +3,31 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CourseResource;
-use App\Models\Course;
+use App\Http\Resources\CollectionResource;
+use App\Models\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Gate;
 
-class CourseController extends Controller
+class CollectionController extends Controller
 {
     /**
-     * Display a listing of the user's courses.
+     * Display a listing of the user's collections.
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $courses = $request->user()->courses()
-            ->with(['chapters.lessons'])
+        $collections = $request->user()->collections()
+            ->with(['sections.notes'])
             ->orderBy('sort_order')
             ->latest('id')
             ->paginate(12);
 
-        return CourseResource::collection($courses);
+        return CollectionResource::collection($collections);
     }
 
     /**
-     * Store a newly created course.
+     * Store a newly created collection.
      */
     public function store(Request $request): JsonResponse
     {
@@ -38,9 +38,9 @@ class CourseController extends Controller
             'cover_image' => ['nullable', 'string', 'max:512'],
         ]);
 
-        $maxSort = $request->user()->courses()->max('sort_order') ?? 0;
+        $maxSort = $request->user()->collections()->max('sort_order') ?? 0;
 
-        $course = Course::create([
+        $collection = Collection::create([
             'user_id' => $request->user()->id,
             'title' => trim($validated['title']),
             'description' => $validated['description'] ?? null,
@@ -51,41 +51,41 @@ class CourseController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'কোর্স সফলভাবে তৈরি হয়েছে।',
-            'data' => new CourseResource($course),
+            'message' => 'কালেকশনস সফলভাবে তৈরি হয়েছে।',
+            'data' => new CollectionResource($collection),
         ], 201);
     }
 
     /**
-     * Display the specified course with its full hierarchy.
+     * Display the specified collection with its full hierarchy.
      */
     public function show(Request $request, int $id): JsonResponse
     {
-        $course = Course::with([
-            'chapters' => function ($q) {
+        $collection = Collection::with([
+            'sections' => function ($q) {
                 $q->orderBy('sort_order')->with([
-                    'lessons' => function ($lq) {
+                    'notes' => function ($lq) {
                         $lq->orderBy('sort_order')->with('aggregatedContent.article');
                     },
                 ]);
             },
         ])->findOrFail($id);
 
-        Gate::authorize('view', $course);
+        Gate::authorize('view', $collection);
 
         return response()->json([
             'success' => true,
-            'data' => new CourseResource($course),
+            'data' => new CollectionResource($collection),
         ]);
     }
 
     /**
-     * Update the specified course.
+     * Update the specified collection.
      */
     public function update(Request $request, int $id): JsonResponse
     {
-        $course = Course::findOrFail($id);
-        Gate::authorize('update', $course);
+        $collection = Collection::findOrFail($id);
+        Gate::authorize('update', $collection);
 
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
@@ -94,52 +94,52 @@ class CourseController extends Controller
             'cover_image' => ['nullable', 'string', 'max:512'],
         ]);
 
-        $course->update($validated);
+        $collection->update($validated);
 
         return response()->json([
             'success' => true,
-            'message' => 'কোর্স আপডেট সম্পন্ন হয়েছে।',
-            'data' => new CourseResource($course),
+            'message' => 'কালেকশনস আপডেট সম্পন্ন হয়েছে।',
+            'data' => new CollectionResource($collection),
         ]);
     }
 
     /**
-     * Remove the specified course.
+     * Remove the specified collection.
      */
     public function destroy(Request $request, int $id): JsonResponse
     {
-        $course = Course::findOrFail($id);
-        Gate::authorize('delete', $course);
+        $collection = Collection::findOrFail($id);
+        Gate::authorize('delete', $collection);
 
-        $course->delete();
+        $collection->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'কোর্সটি সফলভাবে মুছে ফেলা হয়েছে।',
+            'message' => 'কালেকশনসটি সফলভাবে মুছে ফেলা হয়েছে।',
         ]);
     }
 
     /**
-     * Reorder user's courses.
+     * Reorder user's collections.
      */
     public function reorder(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'course_ids' => ['required', 'array'],
-            'course_ids.*' => ['integer'],
+            'collection_ids' => ['required', 'array'],
+            'collection_ids.*' => ['integer'],
         ]);
 
         $userId = $request->user()->id;
 
-        foreach ($validated['course_ids'] as $index => $courseId) {
-            Course::where('id', $courseId)
+        foreach ($validated['collection_ids'] as $index => $collectionId) {
+            Collection::where('id', $collectionId)
                 ->where('user_id', $userId)
                 ->update(['sort_order' => $index + 1]);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'কোর্সের ক্রম সফলভাবে আপডেট হয়েছে।',
+            'message' => 'কালেকশনসের ক্রম সফলভাবে আপডেট হয়েছে।',
         ]);
     }
 }

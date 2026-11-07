@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\AggregatedContent;
+use App\Models\Collection;
 use App\Models\ContentReadingHistory;
-use App\Models\Course;
-use App\Models\Lesson;
+use App\Models\Note;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,7 +27,7 @@ class AdminDashboardController extends Controller
         $totalContents = AggregatedContent::count();
         $completedContents = AggregatedContent::where('status', 'completed')->count();
         $pendingContents = AggregatedContent::whereIn('status', [
-            'pending', 'extracting_transcript', 'processing_transcript', 'generating_bengali', 'generating_embeddings'
+            'pending', 'extracting_transcript', 'processing_transcript', 'generating_bengali', 'generating_embeddings',
         ])->count();
         $failedContents = AggregatedContent::where('status', 'failed')->count();
 
@@ -41,9 +41,9 @@ class AdminDashboardController extends Controller
         $totalStudySeconds = ContentReadingHistory::sum('seconds_spent') ?? 0;
         $totalStudyMinutes = round($totalStudySeconds / 60);
 
-        // LMS metrics
-        $totalCourses = Course::count();
-        $totalLessons = Lesson::count();
+        // Second Brain metrics
+        $totalCollections = Collection::count();
+        $totalNotes = Note::count();
 
         // Recent 5 users
         $recentUsers = User::select(['id', 'name', 'email', 'role', 'is_active', 'created_at'])
@@ -85,11 +85,10 @@ class AdminDashboardController extends Controller
                 ],
                 'learning' => [
                     'total_study_minutes' => $totalStudyMinutes,
-                    'total_courses' => $totalCourses,
-                    'total_lessons' => $totalLessons,
+                    'total_collections' => $totalCollections,
+                    'total_notes' => $totalNotes,
                 ],
             ],
         ]);
     }
 }
-

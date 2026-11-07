@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CourseResource extends JsonResource
+class CollectionResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -20,10 +20,10 @@ class CourseResource extends JsonResource
             'cover_image' => $this->cover_image,
             'visibility' => $this->visibility,
             'sort_order' => $this->sort_order,
-            'chapters_count' => $this->chapters()->count(),
-            'lessons_count' => $this->lessons()->count(),
+            'sections_count' => $this->sections()->count(),
+            'notes_count' => $this->notes()->count(),
             'progress_percentage' => $this->progressPercentage(),
-            'chapters' => ChapterResource::collection($this->whenLoaded('chapters')),
+            'sections' => SectionResource::collection($this->whenLoaded('sections')),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];
