@@ -111,5 +111,10 @@ export function renderMarkdown(rawMarkdown) {
         return '<p class="text-muted">কোনো কনটেন্ট পাওয়া যায়নি।</p>';
     }
 
-    return DOMPurify.sanitize(marked.parse(normalizeBengaliLists(raw)));
+    // The AI-written markdown opens with an H1 that repeats the article title,
+    // which every reader already renders as its own heading. Drop that leading
+    // H1 so the title is shown exactly once.
+    const body = raw.replace(/^\s*#\s+[^\n]*\n?/, '');
+
+    return DOMPurify.sanitize(marked.parse(normalizeBengaliLists(body)));
 }
