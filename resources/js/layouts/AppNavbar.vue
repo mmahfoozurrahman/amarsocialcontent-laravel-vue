@@ -58,7 +58,7 @@ const handleLogout = async () => {
                 <span class="brand-icon bg-primary text-white d-inline-flex align-items-center justify-content-center">
                     <i class="bi bi-brain"></i>
                 </span>
-                <span class="brand-text">Amar<span class="text-primary">SocialContent</span></span>
+                <span class="brand-text">আমার<span class="text-primary">সোশ্যাল</span></span>
             </router-link>
 
             <button

@@ -91,12 +91,10 @@ onMounted(async () => {
                             <span class="footer-brand-icon">
                                 <i class="bi bi-brain"></i>
                             </span>
-                            <span class="footer-brand-text">Amar<span>SocialContent</span></span>
+                            <span class="footer-brand-text">আমার<span>সোশ্যাল</span></span>
                         </router-link>
 
-                        <p class="footer-tagline text-secondary small mb-3">
-                            সোশ্যাল মিডিয়া জ্ঞানভাণ্ডার ও পার্সোনাল সেকেন্ড ব্রেন
-                        </p>
+                        <p class="footer-brand-tagline">আমার সোশ্যাল মিডিয়ার জ্ঞানভাণ্ডার ও পার্সোনাল সেকেন্ড ব্রেন</p>
 
                         <div class="d-flex flex-wrap gap-2">
                             <span class="footer-chip"><i class="bi bi-shield-lock"></i> নিজস্ব এআই কী (BYOK)</span>
@@ -202,10 +200,14 @@ onMounted(async () => {
     color: var(--brand-primary);
 }
 
-.footer-tagline {
-    max-width: 42ch;
-    margin-top: 0.75rem;
-    line-height: 1.7;
+.footer-brand-tagline {
+    max-width: 46ch;
+    margin-top: 0.6rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+    color: var(--brand-primary);
 }
 
 .footer-chip {
