@@ -43,6 +43,13 @@ const nextNote = computed(() => {
     return null;
 });
 
+// Tags of the linked article — clicking one opens the filtered library.
+const noteTags = computed(() => currentNote.value?.aggregated_content?.tags || []);
+
+const goToTag = (tag) => {
+    router.push({ path: '/library', query: { tag: tag.slug || tag.name } });
+};
+
 // Render Markdown Content
 const renderedHtml = computed(() => renderMarkdown(currentNote.value?.aggregated_content?.article?.raw_markdown || currentNote.value?.content));
 
@@ -128,6 +135,19 @@ onMounted(() => {
                         <div>
                             <span class="smaller text-muted d-block">{{ currentNote.section?.title }}</span>
                             <h4 class="fw-bold text-dark mb-0">{{ currentNote.title }}</h4>
+
+                            <div v-if="noteTags.length > 0" class="d-flex flex-wrap gap-1 mt-2">
+                                <button
+                                    v-for="t in noteTags"
+                                    :key="t.slug || t.name"
+                                    type="button"
+                                    class="badge bg-light text-secondary border rounded-pill smaller px-2 py-1 tag-pill"
+                                    :title="`'${t.name}' ট্যাগের সব ভিডিও লাইব্রেরিতে দেখুন`"
+                                    @click="goToTag(t)"
+                                >
+                                    #{{ t.name }}
+                                </button>
+                            </div>
                         </div>
 
                         <div class="d-flex align-items-center gap-2">
@@ -201,6 +221,16 @@ onMounted(() => {
 <style scoped>
 .smaller {
     font-size: 0.8rem;
+}
+
+.tag-pill {
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.tag-pill:hover {
+    background-color: var(--brand-soft) !important;
+    color: var(--brand-primary) !important;
 }
 </style>
 

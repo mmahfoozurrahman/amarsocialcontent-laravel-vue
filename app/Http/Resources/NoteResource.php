@@ -22,8 +22,37 @@ class NoteResource extends JsonResource
             'visibility' => $this->visibility,
             'is_completed' => (bool) $this->is_completed,
             'is_linked_to_article' => $this->isLinkedToArticle(),
+            'section' => $this->whenLoaded('section', function () {
+                $section = $this->section;
+
+                return [
+                    'id' => $section->id,
+                    'title' => $section->title,
+                    'collection' => ($section->relationLoaded('collection') && $section->collection) ? [
+                        'id' => $section->collection->id,
+                        'title' => $section->collection->title,
+                        'slug' => $section->collection->slug,
+                        'sections' => $section->collection->relationLoaded('sections')
+                            ? $section->collection->sections->map(fn ($s) => [
+                                'id' => $s->id,
+                                'title' => $s->title,
+                                'notes' => $s->relationLoaded('notes')
+                                    ? $s->notes->map(fn ($n) => [
+                                        'id' => $n->id,
+                                        'title' => $n->title,
+                                        'is_completed' => (bool) $n->is_completed,
+                                    ])->values()
+                                    : [],
+                            ])->values()
+                            : [],
+                    ] : null,
+                ];
+            }),
             'aggregated_content' => $this->whenLoaded('aggregatedContent', function () {
-                if (!$this->aggregatedContent) return null;
+                if (! $this->aggregatedContent) {
+                    return null;
+                }
+
                 return [
                     'id' => $this->aggregatedContent->id,
                     'title' => $this->aggregatedContent->title,
@@ -32,6 +61,13 @@ class NoteResource extends JsonResource
                     'thumbnail_url' => $this->aggregatedContent->thumbnail_url,
                     'content_type' => $this->aggregatedContent->content_type,
                     'reading_time_minutes' => $this->aggregatedContent->reading_time_minutes,
+                    'tags' => $this->aggregatedContent->relationLoaded('tags')
+                        ? $this->aggregatedContent->tags->map(fn ($tag) => [
+                            'id' => $tag->id,
+                            'name' => $tag->name,
+                            'slug' => $tag->slug,
+                        ])->values()
+                        : [],
                     'article' => $this->aggregatedContent->relationLoaded('article') ? [
                         'raw_markdown' => $this->aggregatedContent->article?->raw_markdown,
                         'introduction' => $this->aggregatedContent->article?->introduction,
@@ -47,4 +83,3 @@ class NoteResource extends JsonResource
         ];
     }
 }
-

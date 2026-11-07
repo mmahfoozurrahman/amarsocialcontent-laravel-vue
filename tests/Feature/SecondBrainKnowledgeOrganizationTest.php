@@ -3,9 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\AggregatedContent;
-use App\Models\Section;
 use App\Models\Collection;
 use App\Models\Note;
+use App\Models\Section;
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -286,5 +287,54 @@ class SecondBrainKnowledgeOrganizationTest extends TestCase
         $this->assertCount(1, $response->json('data'));
         $this->assertEquals($article2->id, $response->json('data.0.id'));
     }
-}
 
+    public function test_note_show_returns_collection_tree_with_sibling_notes(): void
+    {
+        $user = User::factory()->create();
+
+        $collection = Collection::create(['user_id' => $user->id, 'title' => 'Career Collection']);
+        $section = Section::create(['collection_id' => $collection->id, 'title' => 'Section 1']);
+
+        $note1 = Note::create(['section_id' => $section->id, 'title' => 'Note 1']);
+        Note::create(['section_id' => $section->id, 'title' => 'Note 2']);
+
+        // The reader sidebar tree and next/prev navigation rely on this tree being present.
+        $this->actingAs($user)
+            ->getJson("/api/user/notes/{$note1->id}")
+            ->assertStatus(200)
+            ->assertJsonPath('data.section.collection.title', 'Career Collection')
+            ->assertJsonCount(2, 'data.section.collection.sections.0.notes')
+            ->assertJsonPath('data.section.collection.sections.0.notes.1.title', 'Note 2');
+    }
+
+    public function test_note_show_includes_linked_article_tags(): void
+    {
+        $user = User::factory()->create();
+
+        $article = AggregatedContent::create([
+            'user_id' => $user->id,
+            'youtube_video_id' => 'taggedYt001',
+            'youtube_url' => 'https://www.youtube.com/watch?v=taggedYt001',
+            'title' => 'Tagged Article',
+            'status' => 'completed',
+        ]);
+
+        $tag = Tag::create(['user_id' => $user->id, 'name' => 'Career']);
+        $article->tags()->attach($tag->id);
+
+        $collection = Collection::create(['user_id' => $user->id, 'title' => 'Tagged Collection']);
+        $section = Section::create(['collection_id' => $collection->id, 'title' => 'Tagged Section']);
+        $note = Note::create([
+            'section_id' => $section->id,
+            'title' => 'Tagged Note',
+            'aggregated_content_id' => $article->id,
+        ]);
+
+        // The note reader renders these tags as clickable links into the filtered library.
+        $this->actingAs($user)
+            ->getJson("/api/user/notes/{$note->id}")
+            ->assertStatus(200)
+            ->assertJsonPath('data.aggregated_content.tags.0.name', 'Career')
+            ->assertJsonPath('data.aggregated_content.tags.0.slug', 'career');
+    }
+}

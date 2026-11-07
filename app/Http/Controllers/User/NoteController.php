@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\AggregatedContentResource;
 use App\Http\Resources\NoteResource;
 use App\Models\AggregatedContent;
-use App\Models\Section;
 use App\Models\Note;
+use App\Models\Section;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -31,7 +31,7 @@ class NoteController extends Controller
         ]);
 
         // CRITICAL TENANT CHECK: If linking an aggregated article, ensure caller owns it!
-        if (!empty($validated['aggregated_content_id'])) {
+        if (! empty($validated['aggregated_content_id'])) {
             $article = AggregatedContent::findOrFail($validated['aggregated_content_id']);
             if ($article->user_id !== $request->user()->id) {
                 throw ValidationException::withMessages([
@@ -65,8 +65,9 @@ class NoteController extends Controller
     public function show(Request $request, int $id): JsonResponse
     {
         $note = Note::with([
-            'section.collection.sections.notes.aggregatedContent',
+            'section.collection.sections.notes',
             'aggregatedContent.article',
+            'aggregatedContent.tags',
         ])->findOrFail($id);
 
         Gate::authorize('view', $note);
@@ -95,13 +96,13 @@ class NoteController extends Controller
         ]);
 
         // If section_id is being moved, verify caller owns destination section
-        if (!empty($validated['section_id']) && $validated['section_id'] != $note->section_id) {
+        if (! empty($validated['section_id']) && $validated['section_id'] != $note->section_id) {
             $targetSection = Section::with('collection')->findOrFail($validated['section_id']);
             Gate::authorize('update', $targetSection);
         }
 
         // CRITICAL TENANT CHECK: If changing linked article, verify ownership!
-        if (array_key_exists('aggregated_content_id', $validated) && !empty($validated['aggregated_content_id'])) {
+        if (array_key_exists('aggregated_content_id', $validated) && ! empty($validated['aggregated_content_id'])) {
             $article = AggregatedContent::findOrFail($validated['aggregated_content_id']);
             if ($article->user_id !== $request->user()->id) {
                 throw ValidationException::withMessages([
@@ -180,4 +181,3 @@ class NoteController extends Controller
         ]);
     }
 }
-

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import api from '@/services/api';
 import { useNotification } from '@/composables/useNotification';
 import AddContentModal from '@/components/content/AddContentModal.vue';
@@ -8,6 +8,7 @@ import StatusBadge from '@/components/content/StatusBadge.vue';
 import VideoDetailsModal from '@/components/video/VideoDetailsModal.vue';
 
 const router = useRouter();
+const route = useRoute();
 const { success, error } = useNotification();
 
 const addModalRef = ref(null);
@@ -101,7 +102,15 @@ watch([selectedType, onlyBookmarked], () => {
     fetchLibrary();
 });
 
+// Deep-link support: /library?tag=<slug> (e.g. arriving from a note's tag)
+watch(() => route.query.tag, (val) => {
+    selectedTag.value = val ? String(val) : '';
+});
+
 onMounted(() => {
+    if (route.query.tag) {
+        selectedTag.value = String(route.query.tag);
+    }
     fetchLibrary();
     fetchTags();
 });
