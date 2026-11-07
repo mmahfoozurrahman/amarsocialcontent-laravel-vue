@@ -62,7 +62,7 @@ Every user's knowledge stays **private and fully isolated** from other users.
 | Frontend | Vue 3 SPA + Vue Router, Bootstrap 5 + Bootstrap Icons |
 | Build | Vite |
 | AI | Groq (primary) + Google Gemini (fallback / embeddings) |
-| Transcripts | Python 3 subtitle engine + manual submission fallback |
+| Transcripts | Python 3 (`youtube-transcript-api`) fallback engine + manual submission |
 
 ---
 
@@ -72,7 +72,7 @@ Every user's knowledge stays **private and fully isolated** from other users.
 - **PHP 8.4+** and **Composer**
 - **Node.js 18+** and **npm**
 - **MySQL 8** (or SQLite for local development)
-- **Python 3** (used by the secondary subtitle extraction engine)
+- **Python 3** + the `youtube-transcript-api` package (secondary transcript engine — see below)
 - A process runner for the queue worker
 
 ### Steps
@@ -119,6 +119,20 @@ php artisan queue:work
 
 > Shortcut: `composer run dev` starts the server, queue worker and Vite together.
 
+### Python transcriber (secondary transcript engine)
+
+Transcripts are primarily fetched in PHP, but when YouTube blocks the request (its proof-of-origin / PO-token bot checks), the app falls back to a small standalone Python engine built on [`youtube-transcript-api`](https://pypi.org/project/youtube-transcript-api/).
+
+```bash
+# Install the Python dependency — into the same interpreter you point PYTHON_BINARY at
+pip install youtube-transcript-api
+```
+
+- **Script:** `app/Services/YouTube/scripts/extract_subtitles.py`
+- **Invoked by:** `App\Services\YouTubeTranscriptService` (run as a subprocess, JSON over stdout).
+- **`PYTHON_BINARY`** may be left blank — common install locations are auto-detected, otherwise the `python` command is used. Make sure the package is installed for that interpreter, or transcript extraction just falls back to the manual / transcript-less path.
+- Set **`YOUTUBE_PROXY`** if YouTube is geo- or rate-blocked from your server.
+
 ---
 
 ## ⚙️ Environment Configuration
@@ -147,7 +161,7 @@ GEMINI_API_KEY=
 
 # Optional
 YOUTUBE_PROXY=          # outbound proxy for YouTube transcript fetching
-PYTHON_BINARY=python    # Python binary used by the subtitle engine
+PYTHON_BINARY=python    # Python interpreter for the secondary transcript engine (needs youtube-transcript-api)
 ```
 
 ---
