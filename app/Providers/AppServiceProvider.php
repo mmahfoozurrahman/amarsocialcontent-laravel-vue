@@ -15,6 +15,7 @@ use App\Policies\PersonalNotePolicy;
 use App\Policies\SectionPolicy;
 use App\Policies\TagPolicy;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -32,6 +33,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Never serve Vite dev-server assets outside local development. A stray
+        // "hot" file (e.g. left behind by a dev build on the server) must not
+        // override the compiled build manifest in production.
+        if (! $this->app->environment('local')) {
+            Vite::useHotFile(storage_path('framework/vite.hot'));
+        }
+
         Gate::policy(AggregatedContent::class, AggregatedContentPolicy::class);
         Gate::policy(Tag::class, TagPolicy::class);
         Gate::policy(PersonalNote::class, PersonalNotePolicy::class);
