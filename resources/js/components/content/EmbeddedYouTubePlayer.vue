@@ -16,7 +16,7 @@ const props = defineProps({
     },
 });
 
-const isCollapsed = ref(false);
+const isCollapsed = ref(true);
 
 const embedUrl = computed(() => {
     return `https://www.youtube-nocookie.com/embed/${props.videoId}?rel=0&modestbranding=1&enablejsapi=1`;
