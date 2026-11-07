@@ -86,7 +86,6 @@ const handleLogout = async () => {
                             active-class="active"
                             @click="closeNav"
                         >
-                            <i class="bi" :class="link.icon"></i>
                             <span>{{ link.label }}</span>
                         </router-link>
                     </li>
@@ -99,7 +98,6 @@ const handleLogout = async () => {
                             class="nav-link nav-pill-link"
                             @click="closeNav"
                         >
-                            <i class="bi" :class="link.icon"></i>
                             <span>{{ link.label }}</span>
                         </router-link>
                     </li>
