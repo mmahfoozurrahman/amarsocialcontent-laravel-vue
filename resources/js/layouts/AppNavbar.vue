@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
 import { useNotification } from '@/composables/useNotification';
 import { useTour } from '@/composables/useTour';
@@ -8,11 +8,21 @@ import { useNavigation } from '@/composables/useNavigation';
 
 const { user, isAuthenticated, isAdmin, logout } = useAuth();
 const router = useRouter();
+const route = useRoute();
 const { success } = useNotification();
 const { openTour } = useTour();
 const { mainNavLinks, guestNavLinks } = useNavigation();
 
 const visibleNavLinks = computed(() => mainNavLinks.filter((link) => !link.adminOnly || isAdmin.value));
+
+// Keep a nav link highlighted on its related inner pages. e.g. "Library" stays
+// active on /articles/:id, and "Second Brain" on /collections/:id/builder and /notes/:id.
+const isLinkActive = (link) => {
+    const targets = link.activeWhen || [typeof link.to === 'string' ? link.to : link.to.path];
+    const path = route.path;
+
+    return targets.some((target) => path === target || path.startsWith(`${target}/`));
+};
 
 const isNavOpen = ref(false);
 const isScrolled = ref(false);
@@ -82,8 +92,7 @@ const handleLogout = async () => {
                         <router-link
                             :to="link.to"
                             class="nav-link nav-pill-link"
-                            :class="link.linkClass"
-                            active-class="active"
+                            :class="[link.linkClass, { active: isLinkActive(link) }]"
                             @click="closeNav"
                         >
                             <span>{{ link.label }}</span>
