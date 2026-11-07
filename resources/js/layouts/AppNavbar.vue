@@ -87,7 +87,7 @@ const handleLogout = async () => {
                 :class="{ 'show': isNavOpen }"
                 id="navbarContent"
             >
-                <ul v-if="isAuthenticated" class="navbar-nav mx-lg-auto mb-2 mb-lg-0 gap-1 py-2 py-lg-0">
+                <ul v-if="isAuthenticated" class="navbar-nav align-items-lg-center mx-lg-auto mb-2 mb-lg-0 gap-1 py-2 py-lg-0">
                     <li v-for="link in visibleNavLinks" :key="link.label" class="nav-item">
                         <router-link
                             :to="link.to"
@@ -100,7 +100,7 @@ const handleLogout = async () => {
                     </li>
                 </ul>
 
-                <ul v-else class="navbar-nav mx-lg-auto mb-2 mb-lg-0 gap-1 py-2 py-lg-0">
+                <ul v-else class="navbar-nav align-items-lg-center mx-lg-auto mb-2 mb-lg-0 gap-1 py-2 py-lg-0">
                     <li v-for="link in guestNavLinks" :key="link.label" class="nav-item">
                         <router-link
                             :to="link.to"
@@ -285,6 +285,12 @@ const handleLogout = async () => {
 @media (min-width: 992px) {
     .navbar-actions {
         border-top: 0;
+    }
+
+    /* Keep the nav links vertically aligned with the logo wordmark */
+    .navbar-collapse,
+    .navbar-nav {
+        align-items: center;
     }
 }
 

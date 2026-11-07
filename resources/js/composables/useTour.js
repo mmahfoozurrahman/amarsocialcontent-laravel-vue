@@ -11,7 +11,7 @@ const steps = [
         icon: 'bi-stars',
         iconColor: 'text-primary',
         iconBg: 'bg-primary-subtle',
-        title: 'AmarSocialContent-এ আপনাকে স্বাগতম! 🚀',
+        title: 'আমারসোশ্যাল-এ আপনাকে স্বাগতম! 🚀',
         description: 'এটি একটি এআই-চালিত মাল্টি-টেন্যান্ট সোশ্যাল নলেজ প্ল্যাটফর্ম। আপনি যেসব ইউটিউব ভিডিও বা শর্টস দেখেন, সেগুলো ভুলে না গিয়ে বাংলায় উচ্চমানের শিক্ষণীয় আর্টিকেলে রূপান্তর করে নিজস্ব লাইব্রেরিতে সংরক্ষণ করার এক অভিনব মাধ্যম।',
         tips: [
             'ইংরেজি টেকনিক্যাল টার্মস ঠিক রেখে সহজ ও প্রাঞ্জল বাংলায় নোট তৈরি করে।',
@@ -70,7 +70,7 @@ const steps = [
     },
     {
         id: 'lms_collections',
-        badge: 'এলএমএস অর্গানাইজেশন',
+        badge: 'সেকেন্ড ব্রেন অর্গানাইজেশন',
         badgeColor: 'info',
         icon: 'bi-mortarboard-fill',
         iconColor: 'text-info',
