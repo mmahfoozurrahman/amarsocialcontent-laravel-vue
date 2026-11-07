@@ -168,16 +168,9 @@ const copyDemoOtp = async () => {
                                     <button 
                                         type="button" 
                                         class="btn btn-sm bg-white border py-0 px-2 smaller fw-semibold text-primary"
-                                        @click="email = 'mail@laravelcs.com'; name = 'Lara Code Vault'"
+                                        @click="email = 'demouser@amarsocial.com'; name = 'Demo User'"
                                     >
-                                        mail@laravelcs.com
-                                    </button>
-                                    <button 
-                                        type="button" 
-                                        class="btn btn-sm bg-white border py-0 px-2 smaller fw-semibold text-secondary"
-                                        @click="email = 'admin@example.com'; name = 'Admin User'"
-                                    >
-                                        admin@example.com
+                                        demouser@amarsocial.com
                                     </button>
                                 </div>
                             </div>
